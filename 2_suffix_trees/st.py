@@ -1,8 +1,8 @@
 # Title: Search Suffix Tree
+# Author: Carl M. Kobel
 # Description: Builds a suffix tree from a string. Most functions ended up as recursive. 
 
 from trienode import trienode
-# Author: Carl M. Kobel
 
 
 class suffixtree:
@@ -91,23 +91,14 @@ class suffixtree:
         def rec_search(node, p):
             """ Returns the index in S where the match is found. """
             len_p = len(p)
-            #print('recursive call; p:', p, ', node:', node, ', len_p:', len(p))
             if len_p == 0: # base case: when an empty string has been asked for, we are done.
-                #print('DONE!')
                 return node
 
 
             for child in node.children: # for hvert barn
-                #print(' child:', child.in_edge_label) ##print barnet, så vi ved hvor vi er kommet til. 
-
-                #len_in_edge = len(child.in_edge_label)
                 lower_bound = min(len_p, len(child.in_edge_label))
-                #print('   lower_bound', lower_bound)
 
                 if p[0:lower_bound] == child.in_edge_label[0:lower_bound]:
-        
-                    #print('  match:', p[0:lower_bound], 'in child:', child.in_edge_label)
-                    #print()
                     return rec_search(child, p[lower_bound:])
             return False
 
@@ -118,7 +109,7 @@ class suffixtree:
         """ Returns the first match position. """
         rv = self.find_node(p)
         if rv == False:
-            return -1 # evt. ellers kunne man lave en særlig exception. Sikkert langsommere, men mere logisk.
+            return -1
         else: 
             return rv.start_index
         
@@ -131,7 +122,7 @@ class suffixtree:
         if match_node == False:
             return []
         else: # solutions exist:
-            return list(set([subnode.start_index for subnode in match_node])) # try .children??? !!!Jeg kan ikke gennemskue om det er vigtigt at alle children kommer med.
+            return list(set([subnode.start_index for subnode in match_node])) #
 
 
 

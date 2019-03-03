@@ -2,9 +2,10 @@ from st import suffixtree
 from parsers import parse_fasta, parse_fastq
 import sys
 
-
 genome_file = sys.argv[1]
 reads_file = sys.argv[2]
+    
+
 
 for genome in parse_fasta(genome_file):
     
@@ -26,6 +27,7 @@ for genome in parse_fasta(genome_file):
 0\t\
 {read['sequence']}\t\
 {len(read['sequence'])*'~'}")
+
 
 
 

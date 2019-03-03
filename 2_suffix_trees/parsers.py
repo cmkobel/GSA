@@ -1,5 +1,5 @@
 # Author: Carl M. Kobel 2019
-import json
+#import json
 
 
 def parse_fasta(input_file):
