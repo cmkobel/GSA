@@ -4,9 +4,6 @@
 import st
 
 
-S = 'abbaab'
-o = st.suffixtree(S, show = True) 
-
 def sorted_suffixes(root):
         for child in root:
             child.children.sort()
@@ -36,6 +33,9 @@ def lcp(root):
 
 
 
-
-for i in lcp(o.tree):
-    print(i)
+if __name__ == '__main__':
+    S = 'abbaab'
+    o = st.suffixtree(S, show = True) 
+    
+    for sa, lcp in lcp(o.tree):
+        print(sa, lcp)
