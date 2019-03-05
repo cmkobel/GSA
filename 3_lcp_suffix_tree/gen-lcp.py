@@ -14,6 +14,9 @@ def sorted_suffixes(root):
 
 
 def lcp(root):
+    """ This function yields the suffix array as well as the lcp array. It might as 
+    well do that, since it uses the suffix array to compute the lcp array anyway.
+    """
     old_suffix = ''
     for suffix, start_index in sorted_suffixes(root):
         lcp = 0
