@@ -6,19 +6,24 @@
 import st
 
 
-def sorted_suffixes(root):
-        for child in root:
-            child.children.sort()
-
-        for child in root:
-            if len(child.children) == 0:
-                yield child.string_label, child.start_index
-
-
 def lcp(root):
-    """ This function yields the suffix array as well as the lcp array. It might as 
+    """ This generator yields the suffix array as well as the lcp array. It might as 
     well do that, since it uses the suffix array to compute the lcp array anyway.
+    
+    The input should be a root node from a suffix tree made with iterable children.
+    
+    A tuple with three values are yielded: suffix, start_index and lcp.
     """
+    
+    # helper function
+    def sorted_suffixes(root):
+            for child in root:
+                child.children.sort()
+
+            for child in root:
+                if len(child.children) == 0:
+                    yield child.string_label, child.start_index
+
     old_suffix = ''
     for suffix, start_index in sorted_suffixes(root):
         lcp = 0
@@ -27,7 +32,7 @@ def lcp(root):
                 break
             lcp += 1
         old_suffix = suffix
-        yield (start_index, lcp)
+        yield (suffix, start_index, lcp)
         
 
 if __name__ == '__main__':
@@ -35,6 +40,6 @@ if __name__ == '__main__':
     o = st.suffixtree(S, show = True) 
     
     print('sa\tlcp\tstr')
-    print('~~~~~~~~~~~~~~~~')
-    for (str, sa0), (sa, lcp) in zip(sorted_suffixes(o.tree), lcp(o.tree)):
-        print(f'{sa+1}\t{lcp}\t{str}')
+    print('~~~~~~~~~~~~~~~~~~~~')
+    for (str, sa, lcp) in lcp(o.tree):
+        print(f'{sa+1}\t{lcp}\t{str}') # +1 for 1-indexed arrays

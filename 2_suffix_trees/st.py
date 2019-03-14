@@ -19,6 +19,17 @@ class suffixtree:
         for _i, suffix in enumerate(self.suffixes(self.S)):
             self.recursively_append(self.tree, suffix, _i)
 
+
+        # #change sentinel
+        # self.S = '€' + self.S[:-1:]
+
+        # # 2) Add all reverse suffixes to the tree.
+        # for _i, suffix in enumerate(self.suffixes(self.S[::-1])):
+        #     self.recursively_append(self.tree, suffix, _i)
+
+
+
+
         # 3)
         self.compact(self.tree)
 
@@ -130,9 +141,10 @@ if __name__ == "__main__":
 
     ## Light Tests:
 
-    
-    st = suffixtree('Mississippi', show = False)
-    #                    ^^^^^
+    S = 'banana'
+    #st = suffixtree("".join([i for i in reversed(S)]), show = True)
+    st = suffixtree(S, show = True)
+
 
     print('testing single')
     match = st.find_positions('mmm')
