@@ -24,14 +24,14 @@ def lcp(root):
                 if len(child.children) == 0:
                     yield child.string_label, child.start_index
 
-    old_suffix = ''
+    previous_suffix = ''
     for suffix, start_index in sorted_suffixes(root):
         lcp = 0
-        for char_idx in range(len(old_suffix)): # old_suffix is mostly shorter
-            if suffix[char_idx:char_idx+1] != old_suffix[char_idx:char_idx + 1]:
+        for char_idx in range(len(previous_suffix)): # previous_suffix is mostly shorter
+            if suffix[char_idx:char_idx+1] != previous_suffix[char_idx:char_idx + 1]:
                 break
             lcp += 1
-        old_suffix = suffix
+        previous_suffix = suffix
         yield (suffix, start_index, lcp)
         
 
