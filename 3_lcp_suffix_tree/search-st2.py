@@ -17,8 +17,8 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 # Getting the sa and lcp into distinct strings.
-S = 'mississippi'
-strs, sa, lcp = list(zip(*gen_lcp.lcp(S)))
+S = 'banana'
+suffixes, sa, lcp = list(zip(*gen_lcp.lcp(S)))
 n = len(S)
 
 
@@ -27,27 +27,23 @@ root = trienode('', '')
 current_node = root
 
 print('sa\tlcp\tstr\n~~~~~~~~~~~')
-for _str, str in enumerate(strs):
-    print(sa[_str], lcp[_str], str, sep = '\t')
-print()
+
 
 # Iterating over each suffix, being able to look around in sa and lcp.
-for _str, str in enumerate(strs):
-    print('suf', str)
+for i, suffix in enumerate(suffixes):
+    print(sa[i], lcp[i], suffixes[i], sep = '\t')
     
-    if lcp[_str] == 0 and lcp[_str+1] == 0:
-        current_node = trienode(str, str)
-        root.children.append(current_node)
-    
-    if _str < len(S):
-        in_edge_label = str[0:lcp[_str+1]]
-        print('  would insert', in_edge_label)
-    #string_label
-
-
-
-
-    #insert node
+    if lcp[i] == 0:
+        curr_node = root
+        new_node = trienode(suffix[:-1], suffix[:-1])
+        curr_node.adopt(new_node)
+        curr_node = new_node
+        curr_node.append_sentinel()
+    else:
+        new_node = trienode(suffix[lcp[i]:-1], curr_node.string_label + suffix[lcp[i]:-1])
+        curr_node.adopt(new_node)
+        curr_node = new_node
+        curr_node.append_sentinel()
 
 root.visualize()
 
