@@ -9,6 +9,7 @@ import gen_lcp
 from trienode import trienode # for making a tree in linear time from sa and lcp-a
 
 
+
 # ~ Pseudocode ~
 # for suffix in suffix_array.
     # if next lcp == 0:
@@ -32,6 +33,7 @@ print('sa\tlcp\tstr\n~~~~~~~~~~~')
 # Iterating over each suffix, being able to look around in sa and lcp.
 for i, suffix in enumerate(suffixes):
     print(sa[i], lcp[i], suffixes[i], sep = '\t')
+    lcp_offset = 0
     
     if lcp[i] == 0:
         curr_node = root
@@ -39,17 +41,23 @@ for i, suffix in enumerate(suffixes):
         curr_node.adopt(new_node)
         curr_node = new_node
         curr_node.append_sentinel()
+        
     else:
         new_node = trienode(suffix[lcp[i]:-1], curr_node.string_label + suffix[lcp[i]:-1])
         curr_node.adopt(new_node)
-        curr_node = new_node
-        curr_node.append_sentinel()
+        new_node.append_sentinel()
+
+        if i < n and lcp[i+1] > lcp[i]:
+            # hvis den næste suffix har et højere lcp, ved vi at vi skal sætte current til den vi lige har lavet.
+            curr_node = new_node
+            lcp_offset += lcp[i+1]
+
+        else:
+            # hvis det næste suffix har den samme lcp, ved vi at vi skal blive
+            pass
+
+
+
 
 root.visualize()
-
-
-
-
-
-
 

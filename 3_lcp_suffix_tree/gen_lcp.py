@@ -15,7 +15,7 @@ def lcp(S):
     A tuple with three values are yielded: suffix, start_index and lcp.
     """
     
-    root = st.suffixtree(S, show = True).tree
+    root = st.suffixtree(S, show = False).tree
 
     # helper function
     def sorted_suffixes(root):

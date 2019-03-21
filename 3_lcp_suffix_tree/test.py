@@ -1,10 +1,4 @@
-a = [1,2,3]
-b = [11,22,33]
-c = [111,222,333]
-
-z =iter(zip(a,b,c))
-
-for a,b,c in z:
-    print(a,b,c)
-    print(next(z))
-
+for i in range(5):
+    print(i)
+    if i > 300 and 1/0 == 0:
+        print('help')

@@ -11,7 +11,6 @@ class trienode:
         self.children = [i for i in children]
         self.parent = parent
         self.start_index = start_index # the position in S where this string_label occurs. -1 for not given.
-        self.index = index
 
     def __str__(self):
         """ The .string_label is used more often, I guess? """
