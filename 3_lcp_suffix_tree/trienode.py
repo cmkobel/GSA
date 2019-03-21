@@ -5,12 +5,13 @@ from itertools import chain
 
 class trienode:
     """ A trie node. """
-    def __init__(self, in_edge_label = None, string_label = None, children = [], parent = None, start_index = -1):
+    def __init__(self, in_edge_label = None, string_label = None, children = [], parent = None, start_index = -1, index = (None, None)):
         self.in_edge_label = in_edge_label # The edge into this node. 
         self.string_label = string_label # The sum of upstream in_edge_labels.
         self.children = [i for i in children]
         self.parent = parent
         self.start_index = start_index # the position in S where this string_label occurs. -1 for not given.
+        self.index = index
 
     def __str__(self):
         """ The .string_label is used more often, I guess? """

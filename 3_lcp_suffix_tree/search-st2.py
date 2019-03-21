@@ -17,7 +17,7 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 # Getting the sa and lcp into distinct strings.
-S = 'banana'
+S = 'mississippi'
 suffixes, sa, lcp = list(zip(*gen_lcp.lcp(S)))
 n = len(S)
 

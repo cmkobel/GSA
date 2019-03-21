@@ -1,6 +1,7 @@
 # Title: Search Suffix Tree
 # Author: Carl M. Kobel
 # Description: Builds a suffix tree from a string. Most functions ended up as recursive. 
+# only used by gen_lcp.py
 
 from trienode import trienode
 

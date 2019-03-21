@@ -41,5 +41,5 @@ if __name__ == '__main__':
     
     print('sa\tlcp\tstr')
     print('~~~~~~~~~~~~~~~~~~~~')
-    for (str, sa, lcp) in lcp("banana"):
+    for (str, sa, lcp) in lcp("mississippi"):
         print(f'{sa+1}\t{lcp}\t{str}') # +1 for 1-indexed arrays
