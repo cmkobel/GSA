@@ -6,7 +6,7 @@
 import st
 
 
-def lcp(root):
+def lcp(S):
     """ This generator yields the suffix array as well as the lcp array. It might as 
     well do that, since it uses the suffix array to compute the lcp array anyway.
     
@@ -15,6 +15,8 @@ def lcp(root):
     A tuple with three values are yielded: suffix, start_index and lcp.
     """
     
+    root = st.suffixtree(S, show = True).tree
+
     # helper function
     def sorted_suffixes(root):
             for child in root:
@@ -32,14 +34,12 @@ def lcp(root):
                 break
             lcp += 1
         previous_suffix = suffix
-        yield (suffix, start_index, lcp)
+        yield suffix, start_index, lcp
         
 
 if __name__ == '__main__':
-    S = 'banana'
-    o = st.suffixtree(S, show = True) 
     
     print('sa\tlcp\tstr')
     print('~~~~~~~~~~~~~~~~~~~~')
-    for (str, sa, lcp) in lcp(o.tree):
+    for (str, sa, lcp) in lcp("banana"):
         print(f'{sa+1}\t{lcp}\t{str}') # +1 for 1-indexed arrays

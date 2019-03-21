@@ -61,4 +61,14 @@ class trienode:
 
         accept_node(self)
 
-        dot.render('test-output/suffix tree.gv')
+        try:
+            name = self.children[0].string_label[:-1:]
+            if len(name) == 0:
+                name = 'empty'
+        except Exception as e:
+            raise e
+            name = 'empty'
+        #else:
+         #   name = 'empty'
+
+        dot.render(f'test-output/{name}.gv')
