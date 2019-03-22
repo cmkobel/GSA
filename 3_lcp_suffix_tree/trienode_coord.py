@@ -3,14 +3,15 @@
 from graphviz import Digraph
 from itertools import chain
 
-class trienode:
+class tnode_lite:
     """ A trie node. """
     def __init__(self, in_edge_label = None, string_label = None, children = [], parent = None, start_index = -1, index = (None, None)):
-        self.in_edge_label = in_edge_label # The edge into this node. 
-        self.string_label = string_label # The sum of upstream in_edge_labels.
+        #self.in_edge_label = in_edge_label # The edge into this node. 
+        #self.string_label = string_label # The sum of upstream in_edge_labels.
         self.children = [i for i in children]
-        self.parent = parent
-        self.start_index = start_index # the position in S where this string_label occurs. -1 for not given.
+        #self.parent = parent
+        #self.start_index = start_index # the position in S where this string_label occurs. -1 for not given.
+        self.index = index # The index contains the start and end of string
 
     def __str__(self):
         """ The .string_label is used more often, I guess? """
@@ -45,7 +46,7 @@ class trienode:
         self.adopt(sentinel_node) # The parent pointer is strictly speaking not necessary for the sentinel node, but let's just add it for completeness...
 
 
-    def visualize(self, filename = 'empty'):
+    def visualize(self):
         """ Draws a graph with graphviz. 
 
         Builds a tree in the gv-format and exports it to a pdf-file."""
@@ -72,4 +73,14 @@ class trienode:
 
         accept_node(self)
 
-        dot.render(f'test-output/{filename}.gv')
+        try:
+            name = self.children[0].string_label[:-1:]
+            if len(name) == 0:
+                name = 'empty'
+        except Exception as e:
+            #raise e
+            name = 'empty'
+        #else:
+         #   name = 'empty'
+
+        dot.render(f'test-output/{name}.gv')

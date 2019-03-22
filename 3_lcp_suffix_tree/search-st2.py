@@ -10,54 +10,56 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 
-# ~ Pseudocode ~
-# for suffix in suffix_array.
-    # if next lcp == 0:
-        #insert suffix at root
-
-
-
-# Getting the sa and lcp into distinct strings.
+# Setup
 S = 'mississippi'
 suffixes, sa, lcp = list(zip(*gen_lcp.lcp(S)))
 n = len(S)
-
+lcp = [i for i in lcp] + [0]
 
 root = trienode('', '')
 
-current_node = root
 
-print('sa\tlcp\tstr\n~~~~~~~~~~~')
+
+print('i\tsa\tlcp\tsuffixes\n~~+~~~~~~~~')
 
 
 # Iterating over each suffix, being able to look around in sa and lcp.
 for i, suffix in enumerate(suffixes):
-    print(sa[i], lcp[i], suffixes[i], sep = '\t')
-    lcp_offset = 0
-    
+    print(i, sa[i], lcp[i], suffixes[i], sep = '\t')
+
     if lcp[i] == 0:
         curr_node = root
-        new_node = trienode(suffix[:-1], suffix[:-1])
-        curr_node.adopt(new_node)
-        curr_node = new_node
-        curr_node.append_sentinel()
-        
-    else:
-        new_node = trienode(suffix[lcp[i]:-1], curr_node.string_label + suffix[lcp[i]:-1])
-        curr_node.adopt(new_node)
-        new_node.append_sentinel()
+        if lcp[i+1] > 0: 
+            # If next lcp is higher; split the node into two parts.
+            first = trienode(suffix[:lcp[i+1]], suffix[:lcp[i+1]])
+            second = trienode(suffix[lcp[i+1]:], first.string_label + suffix[lcp[i+1]:])
 
-        if i < n and lcp[i+1] > lcp[i]:
-            # hvis den næste suffix har et højere lcp, ved vi at vi skal sætte current til den vi lige har lavet.
-            curr_node = new_node
-            lcp_offset += lcp[i+1]
-
+            first.adopt(second)
+            curr_node.adopt(first)
+            curr_node = first
         else:
-            # hvis det næste suffix har den samme lcp, ved vi at vi skal blive
-            pass
+            #insert suffix
+            curr_node.adopt(trienode(suffix, suffix))
+    
+    else:
+        if lcp[i+1] > lcp[i]:
+            #split
+            first = trienode(suffix[lcp[i]:lcp[i+1]], curr_node.string_label + suffix[lcp[i]:lcp[i+1]])
+            second = trienode(suffix[lcp[i+1]:], first.string_label + suffix[lcp[i+1]:]) # Hvorfor får den ikke det med, der står i foregående node?
+            first.adopt(second)
+            curr_node.adopt(first)
+            curr_node = first
+        else:
+            # Insert as is
+            new_node = trienode(suffix[lcp[i]:], curr_node.string_label + suffix[lcp[i]:])
+            curr_node.adopt(new_node)
+
+
+
+    root.visualize(f'iter/{i}')
 
 
 
 
-root.visualize()
+
 
