@@ -14,7 +14,7 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 S = 'mississippi'
 suffixes, sa, lcp = list(zip(*gen_lcp.lcp(S)))
 n = len(S)
-lcp = [i for i in lcp] + [0]
+lcp = [i for i in lcp] + [lcp[-1]] # Måske ville det være smartere at duplikere den sidste værdi, fordi så skal der ikke splittes på nogen måde ahead of time.
 
 root = trienode('', '')
 
@@ -29,30 +29,27 @@ for i, suffix in enumerate(suffixes):
 
     if lcp[i] == 0:
         curr_node = root
-        if lcp[i+1] > 0: 
-            # If next lcp is higher; split the node into two parts.
-            first = trienode(suffix[:lcp[i+1]], suffix[:lcp[i+1]])
-            second = trienode(suffix[lcp[i+1]:], first.string_label + suffix[lcp[i+1]:])
+    # istedet:
 
-            first.adopt(second)
-            curr_node.adopt(first)
-            curr_node = first
-        else:
-            #insert suffix
-            curr_node.adopt(trienode(suffix, suffix))
     
+    if lcp[i+1] > lcp[i]:
+        #split new children ahead of time
+        first = trienode(suffix[lcp[i]:lcp[i+1]], curr_node.string_label + suffix[lcp[i]:lcp[i+1]])
+        second = trienode(suffix[lcp[i+1]:], first.string_label + suffix[lcp[i+1]:]) # Hvorfor får den ikke det med, der står i foregående node?
+        first.adopt(second)
+        curr_node.adopt(first)
+        curr_node = first
+    
+    if lcp[i+1] > 0 and lcp[i+1] < lcp[i]:
+        #split parent ahead of time
+        curr_node = curr_node.split(lcp[i+1])
+        print('split', i)
+        
+
     else:
-        if lcp[i+1] > lcp[i]:
-            #split
-            first = trienode(suffix[lcp[i]:lcp[i+1]], curr_node.string_label + suffix[lcp[i]:lcp[i+1]])
-            second = trienode(suffix[lcp[i+1]:], first.string_label + suffix[lcp[i+1]:]) # Hvorfor får den ikke det med, der står i foregående node?
-            first.adopt(second)
-            curr_node.adopt(first)
-            curr_node = first
-        else:
-            # Insert as is
-            new_node = trienode(suffix[lcp[i]:], curr_node.string_label + suffix[lcp[i]:])
-            curr_node.adopt(new_node)
+        # Insert as is
+        new_node = trienode(suffix[lcp[i]:], curr_node.string_label + suffix[lcp[i]:])
+        curr_node.adopt(new_node)
 
 
 

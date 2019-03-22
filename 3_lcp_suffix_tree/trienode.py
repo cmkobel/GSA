@@ -39,10 +39,27 @@ class trienode:
         self.children.append(child)
         child.parent = self
 
-    def append_sentinel(self):
-        """ Appends a sentinel node. """
-        sentinel_node = trienode('$', self.string_label + '$')
-        self.adopt(sentinel_node) # The parent pointer is strictly speaking not necessary for the sentinel node, but let's just add it for completeness...
+    
+    def split(self, split_pos):
+        #def __init__(self, in_edge_label = None, string_label = None, children = [], parent = None, start_index = -1, index = (None, None)):
+        """ Depending on the split_pos, the self node will be split into 2, around this position. 
+        Note, that it is only possible to split on the in edge label. 
+        Note also, that this function does not arrange the self.parent pointer, as it looks like it is not going to be used.. """
+        if split_pos > len(self.in_edge_label) or split_pos < 0:
+            raise ValueError(f'Split position: split_pos ({split_pos}) can\'t be higher than the length of self.in_edge_label ({len(self.in_edge_label)}) or below zero. Not splitting')
+
+        second_node = trienode(self.in_edge_label[split_pos:], self.string_label, children = self.children)
+
+        self.string_label = self.string_label[:- len(self.in_edge_label) + split_pos]
+        self.in_edge_label = self.in_edge_label[:split_pos]
+        self.children = children = [second_node]
+
+        return second_node
+
+
+        
+
+
 
 
     def visualize(self, filename = 'empty'):
