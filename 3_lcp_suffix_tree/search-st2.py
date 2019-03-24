@@ -28,33 +28,42 @@ for i, suffix in enumerate(suffixes):
     print(i, sa[i], lcp[i], suffixes[i], sep = '\t')
 
     if lcp[i] == 0:
+        splitcounter = 0
         curr_node = root
-    # istedet:
-
+        new_node = trienode(suffix, suffix)
+        curr_node.adopt(new_node)
+        curr_node = new_node
+        #print(' inserting at root')
     
-    if lcp[i+1] > lcp[i]:
-        #split new children ahead of time
-        first = trienode(suffix[lcp[i]:lcp[i+1]], curr_node.string_label + suffix[lcp[i]:lcp[i+1]])
-        second = trienode(suffix[lcp[i+1]:], first.string_label + suffix[lcp[i+1]:]) # Hvorfor får den ikke det med, der står i foregående node?
-        first.adopt(second)
-        curr_node.adopt(first)
-        curr_node = first
-    
-    if lcp[i+1] > 0 and lcp[i+1] < lcp[i]:
-        #split parent ahead of time
-        curr_node = curr_node.split(lcp[i+1])
-        print('split', i)
-        
+    elif i > 0 and lcp[i] > lcp[i-1]: # lcp has increased
+        curr_node.split(lcp[i]-splitcounter) # i=4: den ved ikke at der allerede er blevet splittet. Derfor splitter den en position for højt.
+        splitcounter += lcp[i]
 
-    else:
-        # Insert as is
+
         new_node = trienode(suffix[lcp[i]:], curr_node.string_label + suffix[lcp[i]:])
         curr_node.adopt(new_node)
+         
+    
+
+    elif lcp[i] == lcp[i-1]: # lcp is the same, append to the same parent.
+        new_node = trienode(suffix[lcp[i]:], curr_node.string_label + suffix[lcp[i]:])
+        curr_node.adopt(new_node)
+
+        if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appenden to this new node.
+            curr_node = new_node
+
+        # Do not change parents.
+    
+
+
+
 
 
 
     root.visualize(f'iter/{i}')
 
+
+# Jeg tror jeg spilder rigtig meget tid på ikke bare at have en parent pointer. Det vil kun tilføje konstant tid, men gør det noget?
 
 
 

@@ -3,10 +3,6 @@ digraph {
 	"|" [label=""]
 	"$|$" [label="$"]
 	"|" -> "$|$" [label="$"]
-	"i|i" [label=i]
-	"$|i$" [label="i$"]
-	"i|i" -> "$|i$" [label="$"]
-	"i$|ii$" [label="ii$"]
-	"i|i" -> "i$|ii$" [label="i$"]
-	"|" -> "i|i" [label=i]
+	"i$|i$" [label="i$"]
+	"|" -> "i$|i$" [label="i$"]
 }

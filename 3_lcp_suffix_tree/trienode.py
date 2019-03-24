@@ -46,7 +46,7 @@ class trienode:
         Note, that it is only possible to split on the in edge label. 
         Note also, that this function does not arrange the self.parent pointer, as it looks like it is not going to be used.. """
         if split_pos > len(self.in_edge_label) or split_pos < 0:
-            raise ValueError(f'Split position: split_pos ({split_pos}) can\'t be higher than the length of self.in_edge_label ({len(self.in_edge_label)}) or below zero. Not splitting')
+            raise ValueError(f'Split position: split_pos ({split_pos}) can\'t be higher than the length of self.in_edge_label ({len(self.in_edge_label)}) or below zero.\n\tNot splitting when trying to split node with string_label: {self.string_label}.')
 
         second_node = trienode(self.in_edge_label[split_pos:], self.string_label, children = self.children)
 
@@ -54,7 +54,7 @@ class trienode:
         self.in_edge_label = self.in_edge_label[:split_pos]
         self.children = children = [second_node]
 
-        return second_node
+        #return second_node # returns, for controlling the curr_node variable (because I don't want to use the parent pointer.). Update: apparently, it is detrimental to proper performance to set the curr_node to this one.
 
 
         
