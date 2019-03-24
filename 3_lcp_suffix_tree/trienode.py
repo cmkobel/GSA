@@ -9,7 +9,7 @@ class trienode:
         self.in_edge_label = in_edge_label # The edge into this node. 
         self.string_label = string_label # The sum of upstream in_edge_labels.
         self.children = [i for i in children]
-        self.parent = parent
+        #self.parent = parent
         self.start_index = start_index # the position in S where this string_label occurs. -1 for not given.
 
     def __str__(self):
@@ -37,7 +37,7 @@ class trienode:
     def adopt(self, child):
         """ Adopts a child """
         self.children.append(child)
-        child.parent = self
+        #child.parent = self
 
     
     def split(self, split_pos):
