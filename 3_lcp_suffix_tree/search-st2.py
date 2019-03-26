@@ -10,7 +10,7 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 # Setup
-S = 'euthetuhteuthetuhetuhetuetuhethu'
+S = 'sassasass'
 
 #S = S.replace(' ', '')
 
@@ -72,20 +72,20 @@ for i, suffix in enumerate(suffixes):
     elif i > 0 and lcp[i] < lcp[i-1]:
         # Gå op igennem forældrestakken indtil der findes en forælder der skal splittes.
 
-        backtraced_letters = 0 # Jeg tror ikke backtraced_letters skal stå her, den skal jo kun nulstilles hvis vi er i roden?
+        backtraced_letters = 0
         for parent in reversed(parent_stack):
-            print(' iterated parent:', parent, parent.in_edge_label)
 
-            
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
+
+            print(' iterated parent:', parent, parent.in_edge_label, ' backtraced_letters:', backtraced_letters)
 
             # In this case, a single level up is necessary, so it is hard to test that the code is working properly, anyway..:
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
             if backtraced_letters >= lcp[i-1]-lcp[i]:
-                # ac
                 # Here, we need to take into account, the difference between last and current lcp
                 print('  splitting parent at:', len(parent.in_edge_label) - lcp[i-1]+lcp[i])
+
                 parent.split(len(parent.in_edge_label) - lcp[i-1]+lcp[i])
                 splitted_distance = 0
 
@@ -107,7 +107,7 @@ for i, suffix in enumerate(suffixes):
 
 
 
-    #root.visualize(f'iter/{i} {suffix}')
+    root.visualize(f'iter/{i} {suffix}')
 
 root.visualize(f'iter/Done')
 
