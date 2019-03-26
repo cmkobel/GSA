@@ -10,8 +10,9 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 # Setup
-S = 'Mississippi'
 S = 'sassasass'
+S = 'Mississippi'
+S = 'aotntnatonatnatatatnaonaontaontaontaotnantotnaontaotnaotnntaontaontatnatnontatnaotna'
 
 #S = S.replace(' ', '')
 
@@ -67,20 +68,14 @@ for i, suffix in enumerate(suffixes):
     # Case 3: lcp is lower.
     
     elif i > 0 and lcp[i] < lcp[i-1]:
+
         # Gå op igennem forældrestakken indtil der findes en forælder der skal splittes.
-
         backtraced_letters = 0 # Jeg tror ikke backtraced_letters skal stå her, den skal jo kun nulstilles hvis vi er i roden?
-        #for parent in reversed(parent_stack): # Man burde sige for i in range(len(parent_stack)), og så poppe en parent, og bruge den som parent.
-        #for _unused in range(len(parent_stack)):
         while len(parent_stack) > 0:
-            parent = parent_stack.pop() # Man kunne sikker også lave en pytonisk iterator som bruger pop til at loope igennem bagfra. 
-            # måske burde man poppe i bunden.
-
+            parent = parent_stack.pop() # Man kunne sikkert også lave en pytonisk iterator som bruger pop til at loope igennem bagfra. 
             
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
             print(' iterated parent:', parent, parent.in_edge_label, ' backtraced_letters:', backtraced_letters)
-
-            # In this case, a single level up is necessary, so it is hard to test that the code is working properly, anyway..:
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
             if backtraced_letters >= lcp[i-1]-lcp[i]:
@@ -98,11 +93,12 @@ for i, suffix in enumerate(suffixes):
                 #parent.split(len(parent.in_edge_label) - lcp[i-1]+lcp[i]) # Før jeg vidste at jeg prøvede at splitte noget der ikke skal splittes, og begyndte at undre mig over hvorfor den ikke rammer nul når noden allerede er splittet, brugte jeg denne linje (backup).
 
 
-                new_node = trienode(suffix[lcp[i]:], parent.string_label + suffix[lcp[i]:])
+                new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
                 print('  This is the node that is going to be adopted', new_node)
-                print('  with suffix:', parent.string_label + suffix[lcp[i]:])
+                print('  with suffix:', parent_stack[-1].string_label + suffix[lcp[i]:])
                 # split skal beholde current til den gamle
-                parent.adopt(new_node)
+                parent_stack[-1].adopt(new_node)
+                print('   success')
 
 
                 if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
@@ -122,6 +118,7 @@ for i, suffix in enumerate(suffixes):
     root.visualize(f'iter/{i} {suffix}')
 
 root.visualize(f'iter/Done')
+
 
 
 
