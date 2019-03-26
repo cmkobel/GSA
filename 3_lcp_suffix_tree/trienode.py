@@ -49,7 +49,8 @@ class trienode:
         # If the split_pos is 0, inserts an empty node?
         #print('this is the length', len(self.in_edge_label))
         if split_pos > len(self.in_edge_label) or split_pos < 0:
-            raise ValueError(f'Split position: split_pos ({split_pos}) can\'t be higher than the length of self.in_edge_label ({len(self.in_edge_label)}) or below zero.\n\tNot splitting when trying to split node with string_label: {self.string_label}.')
+            err = ValueError(f'Split position: split_pos ({split_pos}) can\'t be higher than the length of self.in_edge_label ({len(self.in_edge_label)}) or below zero.\n\tNot splitting when trying to split node with string_label: {self.string_label}.')
+            raise err
 
         if split_pos == 0:
             # Then nothing happens.

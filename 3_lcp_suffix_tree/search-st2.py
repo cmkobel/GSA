@@ -10,7 +10,10 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 # Setup
-S = 'mississippi'
+S = 'euthetuhteuthetuhetuhetuetuhethu'
+
+#S = S.replace(' ', '')
+
 suffixes, sa, lcp = list(zip(*gen_lcp.lcp(S)))
 n = len(S)
 lcp = [i for i in lcp] + [lcp[-1]] # Måske ville det være smartere at duplikere den sidste værdi, fordi så skal der ikke splittes på nogen måde ahead of time.
@@ -24,10 +27,13 @@ print('i\t\tsa\tlcp\tsuffixes\n~~~~+~~~~~~~~~~~~~~~~')
 # Iterating over each suffix, being able to look around in sa and lcp.
 for i, suffix in enumerate(suffixes):
     print(i, '|', sa[i], lcp[i], suffixes[i], sep = '\t')
+    
+
 
     # Case 0: lcp is zero.
     if lcp[i] == 0:
         #print(' inserting at root')
+
 
         parent_stack = [root]
 
@@ -46,7 +52,11 @@ for i, suffix in enumerate(suffixes):
 
         new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
         parent_stack[-1].adopt(new_node)
-         
+        
+        if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
+            #parent_stack[-1] = new_node
+            parent_stack.append(new_node)
+
     # Case 2: lcp is the same.
     elif lcp[i] == lcp[i-1]: # lcp is the same, append to the same parent.
         new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
@@ -62,8 +72,9 @@ for i, suffix in enumerate(suffixes):
     elif i > 0 and lcp[i] < lcp[i-1]:
         # Gå op igennem forældrestakken indtil der findes en forælder der skal splittes.
 
-        backtraced_letters = 0
+        backtraced_letters = 0 # Jeg tror ikke backtraced_letters skal stå her, den skal jo kun nulstilles hvis vi er i roden?
         for parent in reversed(parent_stack):
+            print(' iterated parent:', parent, parent.in_edge_label)
 
             
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
@@ -72,13 +83,11 @@ for i, suffix in enumerate(suffixes):
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
             if backtraced_letters >= lcp[i-1]-lcp[i]:
-                print(' ', 'backtraced_letters:', backtraced_letters)
-                print(' ', 'parent.in_edge_label:', parent.in_edge_label, 'is the node where we want to split')
-                print(' ', 'len(parent.in_edge_label):', len(parent.in_edge_label))
-                print(' ', lcp[i-1], lcp[i])
-
+                # ac
                 # Here, we need to take into account, the difference between last and current lcp
+                print('  splitting parent at:', len(parent.in_edge_label) - lcp[i-1]+lcp[i])
                 parent.split(len(parent.in_edge_label) - lcp[i-1]+lcp[i])
+                splitted_distance = 0
 
                 new_node = trienode(suffix[lcp[i]:], parent.string_label + suffix[lcp[i]:])
                 # split skal beholde current til den gamle
@@ -87,7 +96,7 @@ for i, suffix in enumerate(suffixes):
 
                 if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
                     parent_stack.append(new_node)
-                    print(parent_stack) # 1) Så nu er vi på ssippi$. Hvordan ved vi hvordan vi skal splitte den til den næste?
+                    #print(parent_stack) # 1) Så nu er vi på ssippi$. Hvordan ved vi hvordan vi skal splitte den til den næste?
 
 
                 break # stop her
@@ -98,7 +107,9 @@ for i, suffix in enumerate(suffixes):
 
 
 
-    root.visualize(f'iter/{i} {suffix}')
+    #root.visualize(f'iter/{i} {suffix}')
+
+root.visualize(f'iter/Done')
 
 
 
