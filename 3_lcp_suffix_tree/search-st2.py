@@ -12,7 +12,7 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 # Setup
 S = 'sassasass'
 S = 'Mississippi'
-S = 'aotntnatonatnatatatnaonaontaontaontaotnantotnaontaotnaotnntaontaontatnatnontatnaotna'
+S = 'asassassasasassasasasasasasasasas'
 
 #S = S.replace(' ', '')
 
@@ -46,6 +46,10 @@ for i, suffix in enumerate(suffixes):
         
     # Case 1: lcp has increased.
     elif i > 0 and lcp[i] > lcp[i-1]: # lcp has increased
+        if len(parent_stack) == 0:
+            print('parentstack er tom')
+            parent_stack = [root]
+
         parent_stack[-1].split(lcp[i]-lcp[i-1])
         
 
@@ -75,30 +79,30 @@ for i, suffix in enumerate(suffixes):
             parent = parent_stack.pop() # Man kunne sikkert også lave en pytonisk iterator som bruger pop til at loope igennem bagfra. 
             
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
-            print(' iterated parent:', parent, parent.in_edge_label, ' backtraced_letters:', backtraced_letters)
+            #print(' iterated parent:', parent, parent.in_edge_label, ' backtraced_letters:', backtraced_letters)
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
             if backtraced_letters >= lcp[i-1]-lcp[i]:
 
-                print('  splitting parent at:', len(parent.in_edge_label) - (lcp[i-1]-lcp[i]))
-                print('  difference:', lcp[i-1] - lcp[i])
+                #print('  splitting parent at:', len(parent.in_edge_label) - (lcp[i-1]-lcp[i]))
+                #print('  difference:', lcp[i-1] - lcp[i])
 
                 split_point = backtraced_letters - (lcp[i-1]-lcp[i])
-                print('  split_point:', split_point)
+                #print('  split_point:', split_point)
 
                 parent.split(split_point)
-                print('  Just did a split. Current parent is:', parent_stack[-1], 'with children:', parent_stack[-1].children)
+                #print('  Just did a split. Current parent is:', parent_stack[-1], 'with children:', parent_stack[-1].children)
                 #print('  Just did a split. Current parent is:', parent, 'with children:', parent.children)
 
                 #parent.split(len(parent.in_edge_label) - lcp[i-1]+lcp[i]) # Før jeg vidste at jeg prøvede at splitte noget der ikke skal splittes, og begyndte at undre mig over hvorfor den ikke rammer nul når noden allerede er splittet, brugte jeg denne linje (backup).
 
 
                 new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
-                print('  This is the node that is going to be adopted', new_node)
-                print('  with suffix:', parent_stack[-1].string_label + suffix[lcp[i]:])
+                #print('  This is the node that is going to be adopted', new_node)
+                #print('  with suffix:', parent_stack[-1].string_label + suffix[lcp[i]:])
                 # split skal beholde current til den gamle
                 parent_stack[-1].adopt(new_node)
-                print('   success')
+                #print('   success')
 
 
                 if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
@@ -109,7 +113,7 @@ for i, suffix in enumerate(suffixes):
                 break # stop her
 
                 # Because backtraced letters is bigger than what we need, we need to split the middle of the node.
-            #parent_stack.pop()
+
 
 
 
