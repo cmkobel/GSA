@@ -29,7 +29,7 @@ print('i\t\tsa\tlcp\tsuffixes\n~~~~+~~~~~~~~~~~~~~~~')
 parent_stack = []
 # Iterating over each suffix, being able to look around in sa and lcp.
 for i, suffix in enumerate(suffixes):
-    print(i, '|', sa[i], lcp[i], suffixes[i], parent_stack, sep = '\t')
+    print(i, '|', sa[i], lcp[i], suffixes[i], parent_stack, sep = '\t', end = ' ')
     
 
 
@@ -60,18 +60,23 @@ for i, suffix in enumerate(suffixes):
 
     # Case 3: lcp is lower.    
     elif i > 0 and lcp[i] < lcp[i-1]:
-
+        print()
         # Gå op igennem forældrestakken indtil der findes en forælder der skal splittes.
         backtraced_letters = 0
         while len(parent_stack) > 0:
             parent = parent_stack.pop() # Man kunne sikkert også lave en pytonisk iterator som bruger pop til at loope igennem bagfra. 
+            print('parent:', parent)
             
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
             if backtraced_letters >= lcp[i-1]-lcp[i]:
                 split_point = backtraced_letters - (lcp[i-1]-lcp[i])
+                print(' ready to split', parent, 'at position:', split_point)
+                parent_stack.append(parent) # because we removed the parent, we should add it again ?
                 parent.split(split_point)
+
+
                 new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
                 parent_stack[-1].adopt(new_node)
 
@@ -81,9 +86,7 @@ for i, suffix in enumerate(suffixes):
     if lcp[i+1] > lcp[i]:
         parent_stack.append(new_node) 
 
-
-
-
+    print('=>', parent_stack)
 
 
     root.visualize(f'iter/{i} {suffix}')
