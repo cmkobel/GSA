@@ -11,6 +11,7 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 # Setup
 S = 'sassasass'
+#S = 'mississippi'
 
 #S = S.replace(' ', '')
 
@@ -76,18 +77,20 @@ for i, suffix in enumerate(suffixes):
         for parent in reversed(parent_stack):
 
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
+            
+            parent_stack.pop() #Måske er problemet, at jeg ikke popper parents, når jeg traverser opad.
 
             print(' iterated parent:', parent, parent.in_edge_label, ' backtraced_letters:', backtraced_letters)
 
             # In this case, a single level up is necessary, so it is hard to test that the code is working properly, anyway..:
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
-            if backtraced_letters >= lcp[i-1]-lcp[i]:
+            if backtraced_letters > lcp[i-1]-lcp[i]:
                 # Here, we need to take into account, the difference between last and current lcp
                 print('  splitting parent at:', len(parent.in_edge_label) - lcp[i-1]+lcp[i])
 
-                parent.split(len(parent.in_edge_label) - lcp[i-1]+lcp[i])
-                splitted_distance = 0
+                parent.split(len(parent.in_edge_label) - (lcp[i-1]-lcp[i]))
+                # Hele problemet er, at jeg prøver at splitte noget der ikke skal splittes. Der skal kun splittes hvis 
 
                 new_node = trienode(suffix[lcp[i]:], parent.string_label + suffix[lcp[i]:])
                 # split skal beholde current til den gamle
