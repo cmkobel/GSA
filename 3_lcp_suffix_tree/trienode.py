@@ -45,8 +45,15 @@ class trienode:
         """ Depending on the split_pos, the self node will be split into 2, around this position. 
         Note, that it is only possible to split on the in edge label. 
         Note also, that this function does not arrange the self.parent pointer, as it looks like it is not going to be used.. """
+
+        # If the split_pos is 0, inserts an empty node?
+        #print('this is the length', len(self.in_edge_label))
         if split_pos > len(self.in_edge_label) or split_pos < 0:
             raise ValueError(f'Split position: split_pos ({split_pos}) can\'t be higher than the length of self.in_edge_label ({len(self.in_edge_label)}) or below zero.\n\tNot splitting when trying to split node with string_label: {self.string_label}.')
+
+        if split_pos == 0:
+            # Then nothing happens.
+            return
 
         second_node = trienode(self.in_edge_label[split_pos:], self.string_label, children = self.children)
 

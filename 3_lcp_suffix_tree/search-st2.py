@@ -35,7 +35,7 @@ for i, suffix in enumerate(suffixes):
         parent_stack[-1].adopt(new_node)
         
         parent_stack.append(new_node)
-        parent_stack = [parent_stack[-1]]
+        #parent_stack = [parent_stack[-1]]
         
         #print(' inserting at root')
     
@@ -43,6 +43,7 @@ for i, suffix in enumerate(suffixes):
     elif i > 0 and lcp[i] > lcp[i-1]: # lcp has increased
         parent_stack[-1].split(lcp[i]-splitcounter) # i=4: den ved ikke at der allerede er blevet splittet. Derfor splitter den en position for højt.
         splitcounter += lcp[i]
+        print(' 1: splitting, i =', i, 'and sc =', splitcounter)
 
 
         new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
@@ -59,14 +60,38 @@ for i, suffix in enumerate(suffixes):
         # Do not change parents.
 
     # Case 3: lcp is lower.
-    # Gå op igennem forældrekøen indtil 
+    elif i > 0 and lcp[i] < lcp[i-1]:
+        # Gå op igennem forældrestakken indtil der findes en forælder der skal splittes.
+
+        backtraced_letters = 0
+        for parent in reversed(parent_stack):
+            # tæl længden af hver parent op
+            backtraced_letters += len(parent.in_edge_label) # here it should add 'si' to backtraced_letters
+
+            # In this case, a single level up is necessary, so it is hard to test that the code is working properly.
+
+            # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
+            if backtraced_letters >= lcp[i-1]-lcp[i]:
+                print(' ', 'l bl', backtraced_letters)
+                print(' ', parent.in_edge_label, 'is the node where we want to split')
+                print(' ', len(parent.in_edge_label))
+                print(' ', lcp[i-1], lcp[i])
+                parent.split(len(parent.in_edge_label) - lcp[i-1]+lcp[i])
+
+                new_node = trienode(suffix[lcp[i]:], parent.string_label + suffix[lcp[i]:])
+                # split skal beholde current til den gamle
+                parent.adopt(new_node)
 
 
+                if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
+                    parent_stack.append(new_node)
+                    print(parent_stack) # 1) Så nu er vi på ssippi$. Hvordan ved vi hvordan vi skal splitte den til den næste?
+                    print('sc', splitcounter)
 
 
+                break # stop her
 
-    
-
+                # Because backtraced letters is bigger than what we need, we need to split the middle of the node.
 
 
 
