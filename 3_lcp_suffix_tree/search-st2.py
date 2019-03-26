@@ -10,9 +10,10 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 # Setup
-S = 'sassasass'
+#S = 'asassassasasassasasasasasasasasas'
 S = 'Mississippi'
-S = 'asassassasasassasasasasasasasasas'
+S = 'sassasass'
+
 
 #S = S.replace(' ', '')
 
@@ -28,22 +29,17 @@ print('i\t\tsa\tlcp\tsuffixes\n~~~~+~~~~~~~~~~~~~~~~')
 parent_stack = []
 # Iterating over each suffix, being able to look around in sa and lcp.
 for i, suffix in enumerate(suffixes):
-    print(i, '|', sa[i], lcp[i], suffixes[i], '\t\t',parent_stack, sep = '\t')
+    print(i, '|', sa[i], lcp[i], suffixes[i], parent_stack, sep = '\t')
     
 
 
     # Case 0: lcp is zero.
     if lcp[i] == 0:
-        #print(' inserting at root')
-
-
         parent_stack = [root]
-
         new_node = trienode(suffix, suffix)
-        
         parent_stack[-1].adopt(new_node)
-        parent_stack.append(new_node)
         
+
     # Case 1: lcp has increased.
     elif i > 0 and lcp[i] > lcp[i-1]: # lcp has increased
         if len(parent_stack) == 0:
@@ -52,67 +48,38 @@ for i, suffix in enumerate(suffixes):
 
         parent_stack[-1].split(lcp[i]-lcp[i-1])
         
-
         new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
         parent_stack[-1].adopt(new_node)
-        
-        if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
-            parent_stack.append(new_node)
+    
 
     # Case 2: lcp is the same.
     elif lcp[i] == lcp[i-1]: # lcp is the same, append to the same parent.
         new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
         parent_stack[-1].adopt(new_node)
 
-        if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
 
-            parent_stack.append(new_node)
-        # Do not change parents.
-
-    # Case 3: lcp is lower.
-    
+    # Case 3: lcp is lower.    
     elif i > 0 and lcp[i] < lcp[i-1]:
 
         # Gå op igennem forældrestakken indtil der findes en forælder der skal splittes.
-        backtraced_letters = 0 # Jeg tror ikke backtraced_letters skal stå her, den skal jo kun nulstilles hvis vi er i roden?
+        backtraced_letters = 0
         while len(parent_stack) > 0:
             parent = parent_stack.pop() # Man kunne sikkert også lave en pytonisk iterator som bruger pop til at loope igennem bagfra. 
             
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
-            #print(' iterated parent:', parent, parent.in_edge_label, ' backtraced_letters:', backtraced_letters)
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
             if backtraced_letters >= lcp[i-1]-lcp[i]:
-
-                #print('  splitting parent at:', len(parent.in_edge_label) - (lcp[i-1]-lcp[i]))
-                #print('  difference:', lcp[i-1] - lcp[i])
-
                 split_point = backtraced_letters - (lcp[i-1]-lcp[i])
-                #print('  split_point:', split_point)
-
                 parent.split(split_point)
-                #print('  Just did a split. Current parent is:', parent_stack[-1], 'with children:', parent_stack[-1].children)
-                #print('  Just did a split. Current parent is:', parent, 'with children:', parent.children)
-
-                #parent.split(len(parent.in_edge_label) - lcp[i-1]+lcp[i]) # Før jeg vidste at jeg prøvede at splitte noget der ikke skal splittes, og begyndte at undre mig over hvorfor den ikke rammer nul når noden allerede er splittet, brugte jeg denne linje (backup).
-
-
                 new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
-                #print('  This is the node that is going to be adopted', new_node)
-                #print('  with suffix:', parent_stack[-1].string_label + suffix[lcp[i]:])
-                # split skal beholde current til den gamle
                 parent_stack[-1].adopt(new_node)
-                #print('   success')
-
-
-                if lcp[i+1] > lcp[i]: # because the next suffix has a larger lcp, we know that it is going to be appended to this new node.
-                    parent_stack.append(new_node)
-                    #print(parent_stack) # 1) Så nu er vi på ssippi$. Hvordan ved vi hvordan vi skal splitte den til den næste?
-
 
                 break # stop her
 
-                # Because backtraced letters is bigger than what we need, we need to split the middle of the node.
+    # Before completing each suffix-insertion, we want to check whether to put the newly inserted node as current parent:
+    if lcp[i+1] > lcp[i]:
+        parent_stack.append(new_node) 
 
 
 

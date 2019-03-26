@@ -54,6 +54,7 @@ class trienode:
 
         if split_pos == 0:
             # Then nothing happens.
+            # How to set this as current parent?
             return
 
         second_node = trienode(self.in_edge_label[split_pos:], self.string_label, children = self.children)
