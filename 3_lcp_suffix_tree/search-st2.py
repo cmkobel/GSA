@@ -17,7 +17,7 @@ for genome in parse_fasta(genome_file):
         for match in st.find_positions(read['sequence']):
 
             print(f"\
-{read['sequence']}\t\
+{read['title']}\t\
 0\t\
 {genome['title']}\t\
 {match+1}\t\
