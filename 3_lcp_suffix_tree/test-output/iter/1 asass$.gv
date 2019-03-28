@@ -1,0 +1,8 @@
+// Suffix tree
+digraph {
+	"|" [label=""]
+	"$|$" [label="$"]
+	"|" -> "$|$" [label="$"]
+	"asass$|asass$" [label="asass$"]
+	"|" -> "asass$|asass$" [label="asass$"]
+}

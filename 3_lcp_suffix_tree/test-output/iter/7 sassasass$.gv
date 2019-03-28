@@ -26,11 +26,5 @@ digraph {
 	"s|sass" -> "asass$|sassasass$" [label="asass$"]
 	"as|sas" -> "s|sass" [label=s]
 	"s|s" -> "as|sas" [label=as]
-	"s|ss" [label=ss]
-	"$|ss$" [label="ss$"]
-	"s|ss" -> "$|ss$" [label="$"]
-	"asass$|ssasass$" [label="ssasass$"]
-	"s|ss" -> "asass$|ssasass$" [label="asass$"]
-	"s|s" -> "s|ss" [label=s]
 	"|" -> "s|s" [label=s]
 }

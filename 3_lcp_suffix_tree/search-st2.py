@@ -11,8 +11,8 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 # Setup
 #S = 'asassassasasassasasasasasasasasas'
-S = 'sassasass'
 S = 'Mississippi'
+S = 'sassasass'
 
 
 #S = S.replace(' ', '')
@@ -65,20 +65,21 @@ for i, suffix in enumerate(suffixes):
         backtraced_letters = 0
         while len(parent_stack) > 0:
             parent = parent_stack.pop() # Man kunne sikkert også lave en pytonisk iterator som bruger pop til at loope igennem bagfra. 
-            print('parent:', parent)
-            
             backtraced_letters += len(parent.in_edge_label) # Tæl længden af hver parent op.
+            print('  parent:', parent_stack[-1], 'backtraced_letters:', backtraced_letters)
+            print('  ps', parent_stack)
 
             # Hvis backtraced_letters indeholder den forskel der er mellem lcp[i-1] og lcp[i], ved vi, at vi er gået langt nok op.
             if backtraced_letters >= lcp[i-1]-lcp[i]:
                 split_point = backtraced_letters - (lcp[i-1]-lcp[i])
-                print(' ready to split', parent, 'at position:', split_point)
-                parent_stack.append(parent) # because we removed the parent, we should add it again ?
+                print('   ready to split', parent, 'at position:', split_point)
+                #parent_stack.append(parent) # because we removed the parent, we should add it again? Apparently not.
                 parent.split(split_point)
+                print('   parent stack after split', parent_stack)
 
 
                 new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
-                parent_stack[-1].adopt(new_node)
+                parent_stack[-1].adopt(new_node) 
 
                 break # stop her
 
