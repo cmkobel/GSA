@@ -12,6 +12,7 @@ for genome in parse_fasta(genome_file):
     for read in parse_fastq(reads_file):
 
         st = st2(genome['sequence'])
+        st.construct_tree()
 
         for match in st.find_positions(read['sequence']):
 

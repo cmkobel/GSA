@@ -19,9 +19,10 @@ class st2:
         self.dump_pdf = dump_pdf
         self.root = trienode('', '')
 
+        self.lcp_array = list(zip(*gen_lcp.lcp(gen_lcp.suffixes(self.S))))
 
         # Run the main method:
-        self.construct_tree()
+        #self.construct_tree(lcp_array)
 
 
 
@@ -33,7 +34,9 @@ class st2:
 
 
     def construct_tree(self):
-        suffixes, sa, lcp = list(zip(*gen_lcp.lcp(self.S)))
+        #suffixes, sa, lcp = list(zip(*gen_lcp.lcp(self.S)))
+        suffixes, sa, lcp = self.lcp_array
+
         n = len(self.S)
         lcp = [i for i in lcp] + [lcp[-1]] # Måske ville det være smartere at duplikere den sidste værdi, fordi så skal der ikke splittes på nogen måde ahead of time.
 
@@ -109,8 +112,8 @@ class st2:
 
 
             #self.root.visualize(f'iter/{i} {suffix}')
-
-        self.root.visualize(f'iter/Done')
+        if self.dump_pdf:
+            self.root.visualize(f'iter/Done')
         pprint()
 
 

@@ -4,24 +4,22 @@
 # Then use this suffix tree to output a file that contains the suffix indices in lexicographical order and the LCP 
 # array.
 
+# Should be breaked up into two parts, so the time can be taken individually.
 
 
-def lcp(S):
-    """ This generator yields the suffix array as well as the lcp array. It might as 
-    well do that, since it uses the suffix array to compute the lcp array anyway.
-        
-    A tuple with three values are yielded: suffix, start_index and lcp.
-    
-    """
-
+def suffixes(S):
     #S = 'Missisippi'
     S += '$'
     S = S.lower()
 
-
     suffixes = [(S[i:],i) for i in range(len(S))]
     suffixes.sort(key=lambda tup: tup[0])
 
+    return suffixes
+
+
+
+def lcp(suffixes):
     previous_suffix = ''
     for suffix, start_index in suffixes:
         #print(suffix, start_index)
@@ -39,5 +37,5 @@ if __name__ == '__main__':
     
     print('sa\tlcp\tstr')
     print('~~~~~~~~~~~~~~~~~~~~')
-    for (str, sa, lcp) in lcp("mississippi"):
+    for (str, sa, lcp) in lcp(suffixes("mississippi")):
         print(f'{sa+1}\t{lcp}\t{str}') # +1 for 1-indexed arrays
