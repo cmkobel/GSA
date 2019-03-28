@@ -1,4 +1,4 @@
-from st import suffixtree
+from st2 import st2
 from parsers import parse_fasta, parse_fastq
 import sys
 
@@ -11,7 +11,7 @@ for genome in parse_fasta(genome_file):
     
     for read in parse_fastq(reads_file):
 
-        st = suffixtree(genome['sequence'])
+        st = st2(genome['sequence'])
 
         for match in st.find_positions(read['sequence']):
 
