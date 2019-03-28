@@ -64,7 +64,7 @@ class trienode:
         self.children = children = [second_node]
 
         #return second_node # returns, for controlling the curr_node variable (because I don't want to use the parent pointer.). Update: apparently, it is detrimental to proper performance to set the curr_node to this one.
-
+        # How do we control what parent is left on the top of the stack after splitting, is that the popping procedure, that guarantees that? I guess so.
 
         
 

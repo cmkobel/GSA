@@ -11,8 +11,8 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 # Setup
 #S = 'asassassasasassasasasasasasasasas'
-S = 'Mississippi'
 S = 'sassasass'
+S = 'Mississippi'
 
 
 #S = S.replace(' ', '')

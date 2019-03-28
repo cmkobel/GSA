@@ -1,0 +1,14 @@
+// Suffix tree
+digraph {
+	"|" [label=""]
+	"$|$" [label="$"]
+	"|" -> "$|$" [label="$"]
+	"Mississippi$|Mississippi$" [label="Mississippi$"]
+	"|" -> "Mississippi$|Mississippi$" [label="Mississippi$"]
+	"i|i" [label=i]
+	"$|i$" [label="i$"]
+	"i|i" -> "$|i$" [label="$"]
+	"ppi$|ippi$" [label="ippi$"]
+	"i|i" -> "ppi$|ippi$" [label="ppi$"]
+	"|" -> "i|i" [label=i]
+}
