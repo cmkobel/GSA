@@ -3,28 +3,31 @@
 # Write a program, gen-lcp, that uses the construction algorithm from the previous algorithm to generate a suffix tree. 
 # Then use this suffix tree to output a file that contains the suffix indices in lexicographical order and the LCP 
 # array.
-
+import st
 
 
 def lcp(S):
     """ This generator yields the suffix array as well as the lcp array. It might as 
     well do that, since it uses the suffix array to compute the lcp array anyway.
-        
-    A tuple with three values are yielded: suffix, start_index and lcp.
     
+    The input should be a root node from a suffix tree made with iterable children.
+    
+    A tuple with three values are yielded: suffix, start_index and lcp.
     """
+    
+    root = st.suffixtree(S, show = False).tree
 
-    #S = 'Missisippi'
-    S += '$'
-    S = S.lower()
+    # helper function
+    def sorted_suffixes(root):
+            for child in root:
+                child.children.sort()
 
-
-    suffixes = [(S[i:],i) for i in range(len(S))]
-    suffixes.sort(key=lambda tup: tup[0])
+            for child in root:
+                if len(child.children) == 0:
+                    yield child.string_label, child.start_index
 
     previous_suffix = ''
-    for suffix, start_index in suffixes:
-        #print(suffix, start_index)
+    for suffix, start_index in sorted_suffixes(root):
         lcp = 0
         for char_idx in range(len(previous_suffix)): # previous_suffix is mostly shorter
             if suffix[char_idx:char_idx+1] != previous_suffix[char_idx:char_idx + 1]:
@@ -32,7 +35,6 @@ def lcp(S):
             lcp += 1
         previous_suffix = suffix
         yield suffix, start_index, lcp
-
         
 
 if __name__ == '__main__':

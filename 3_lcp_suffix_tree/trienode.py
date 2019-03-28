@@ -40,7 +40,7 @@ class trienode:
         #child.parent = self
 
     
-    def split(self, split_pos):
+    def split(self, split_pos, start_index = -1):
         #def __init__(self, in_edge_label = None, string_label = None, children = [], parent = None, start_index = -1, index = (None, None)):
         """ Depending on the split_pos, the self node will be split into 2, around this position. 
         Note, that it is only possible to split on the in edge label. """
@@ -58,7 +58,7 @@ class trienode:
             raise err
 
 
-        second_node = trienode(self.in_edge_label[split_pos:], self.string_label, children = self.children)
+        second_node = trienode(self.in_edge_label[split_pos:], self.string_label, children = self.children, start_index = self.start_index)
 
         self.string_label = self.string_label[:- len(self.in_edge_label) + split_pos]
         self.in_edge_label = self.in_edge_label[:split_pos]
