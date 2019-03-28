@@ -43,28 +43,32 @@ class trienode:
     def split(self, split_pos):
         #def __init__(self, in_edge_label = None, string_label = None, children = [], parent = None, start_index = -1, index = (None, None)):
         """ Depending on the split_pos, the self node will be split into 2, around this position. 
-        Note, that it is only possible to split on the in edge label. 
-        Note also, that this function does not arrange the self.parent pointer, as it looks like it is not going to be used.. """
+        Note, that it is only possible to split on the in edge label. """
 
-        # If the split_pos is 0, inserts an empty node?
-        #print('this is the length', len(self.in_edge_label))
+        # If the split_pos is 0, nothing happens.
+        if split_pos == 0:
+            # Then nothing happens.
+            # How to set this as current parent? 
+            return
+        
+
+        # Input validation.
         if split_pos > len(self.in_edge_label) or split_pos < 0:
             err = ValueError(f'Split position: split_pos ({split_pos}) can\'t be higher than the length of self.in_edge_label ({len(self.in_edge_label)}) or below zero.\n\tNot splitting when trying to split node with string_label: {self.string_label}.')
             raise err
 
-        if split_pos == 0:
-            # Then nothing happens.
-            # How to set this as current parent?
-            return
 
         second_node = trienode(self.in_edge_label[split_pos:], self.string_label, children = self.children)
 
         self.string_label = self.string_label[:- len(self.in_edge_label) + split_pos]
         self.in_edge_label = self.in_edge_label[:split_pos]
-        self.children = children = [second_node]
+        #self.children = children = [second_node] #??? why is 'children' there?
+        self.children = [second_node] #???
+
 
         #return second_node # returns, for controlling the curr_node variable (because I don't want to use the parent pointer.). Update: apparently, it is detrimental to proper performance to set the curr_node to this one.
         # How do we control what parent is left on the top of the stack after splitting, is that the popping procedure, that guarantees that? I guess so.
+        # Split skal efterlade den initielle node som toppen af stakken.
 
         
 

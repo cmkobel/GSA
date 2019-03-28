@@ -10,9 +10,9 @@ from trienode import trienode # for making a tree in linear time from sa and lcp
 
 
 # Setup
-#S = 'asassassasasassasasasasasasasasas'
-S = 'Mississippi'
 S = 'sassasass'
+S = 'asassassasasassasasasasasasasasas'
+S = 'Mississippi'
 
 
 #S = S.replace(' ', '')
@@ -75,7 +75,9 @@ for i, suffix in enumerate(suffixes):
                 print('   ready to split', parent, 'at position:', split_point)
                 #parent_stack.append(parent) # because we removed the parent, we should add it again? Apparently not.
                 parent.split(split_point)
-                print('   parent stack after split', parent_stack)
+                print('   parent stack after split')
+                for kaaa in parent_stack:
+                    print('    >', kaaa) # Det betyder at roden stadig er der.
 
 
                 new_node = trienode(suffix[lcp[i]:], parent_stack[-1].string_label + suffix[lcp[i]:])
