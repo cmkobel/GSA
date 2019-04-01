@@ -22,7 +22,8 @@ class st2:
         self.lcp_array = list(zip(*gen_lcp.lcp(gen_lcp.suffixes(self.S))))
 
         # Run the main method:
-        #self.construct_tree(lcp_array)
+        #self.construct_tree()
+        # This has been commented out for the time-tests to make sense.
 
 
 
@@ -60,9 +61,9 @@ class st2:
 
             # Case 1: lcp has increased.
             elif i > 0 and lcp[i] > lcp[i-1]: # lcp has increased
-                if len(parent_stack) == 0:
-                    pprint('parentstack er tom')
-                    parent_stack = [self.root]
+                # if len(parent_stack) == 0:
+                #     pprint('parentstack er tom')
+                #     parent_stack = [self.root]
 
                 parent_stack[-1].split(lcp[i]-lcp[i-1])
                 
@@ -173,7 +174,8 @@ if __name__ == '__main__':
     S = 'mississippi'
 
 
-    o = st2(S)
+    o = st2(S, dump_pdf = True)
+    o.construct_tree()
 
     print(o.find_positions('iss'))
     print()

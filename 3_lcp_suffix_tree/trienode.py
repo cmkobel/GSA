@@ -1,6 +1,6 @@
 # Author: Carl M. Kobel 2019
 # Description: Nodes for building a trie. Supports visualization with graphviz.
-#from graphviz import Digraph
+from graphviz import Digraph
 from itertools import chain
 
 class trienode:
