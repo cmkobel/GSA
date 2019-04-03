@@ -35,6 +35,7 @@ sa <- read_csv("sa.csv")
 p_sa1 = sa %>% ggplot(aes(n, s)) + geom_point()# + labs(title = 'some subtitle')
 p_sa2 = sa %>% ggplot(aes(n, s/(n*log(n)))) + geom_point()
 p_sa3 = sa %>% ggplot(aes(n, s/(n^2))) + geom_point()
+p_sa3
 
 
 fancyarrange3(p_sa1, p_sa2, p_sa3, 'Suffix Array')
@@ -55,7 +56,7 @@ fancyarrange2(p_lcp1, p_lcp2, 'Longest Common Prefix')
 st <- read_csv("st.csv")
 p_st1 = st %>% ggplot(aes(n, s)) + geom_point()
 p_st2 = st %>% ggplot(aes(n, s/(n))) + geom_point()
-p_st3 = st %>% ggplot(aes(n, s/(n*log(n)))) + geom_point()
+p_st3 = st %>% ggplot(aes(n, s/n^2)) + geom_point()
 
 
 fancyarrange3(p_st1, p_st2, p_st3, 'Suffix Tree')
