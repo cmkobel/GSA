@@ -9,9 +9,6 @@ class sp:
     def __lt__(self, other):
         return bytes((S[self.start:self.end])) < bytes((S[other.start:other.end]))
 
-    def __repr__(self):
-        return '<' + self.__str__() + '>'
-
 
 def set_S(input):
     global S
