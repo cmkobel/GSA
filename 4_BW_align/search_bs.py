@@ -48,28 +48,27 @@ p = 'i'
 j = -1
 L = 0
 R = len(S) - 1
-#for i in range(10):
+
 while True:
     M = -(-(R+L)//2) # ceiling integer division
+    oL, oM, oR = L, M, R
     print(L, M, R)
     print('comparing:', p, S[sa[M]:sa[M]+len(p)])
 
-
-
     if p == S[sa[M]:sa[M]+len(p)]:
         j = sa[M]
-        break
         print('same')
+
     elif p > S[sa[M]:sa[M]+len(p)]:
         L = M
         print('more')
     else:
         R = M
         print('less')
-    M = -(-(R+L)//2) # ceiling integer division
     
-    # if L == M or j != -1:
-    #     break
+    
+    if (L == oL and M == oM and R == oR) or j != -1:
+        break
 
 print(j)
 
