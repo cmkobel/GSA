@@ -1,74 +1,61 @@
 import naive_sa
-
-S = 'mississippi'
-sa, sa_str = naive_sa.sa(S)
-print(' '.join(S))
-print(' '.join([str(i) for i in range(len(S))]))
-print('=' * len(S)*2)
-
-print(sa)
-print(sa_str)
-print('='*len(S)*2)
-
-#print('this is the global S:', bytes(globalized.S).decode('utf-8'))
-
-
-# initialize L, M, R
-# l = 0
-# m = len(S)//2
-# r = len(S) -1
+from math import log2
 
 
 
-# for i in range(10): # While True:; break later
-#     print(sa_str[m])
-#     print(l, m, r)
-#     minimum = min(len(str(sa_str[m])), len(p))
-#     print('min', minimum)
-
-#     if p == str(sa_str[m])[:len(p)]:
-#         break
-#     elif p > str(sa_str[m]):
-#         print('greater')
-#         l = m
-#         r = r
-#         m = (r+l)//2
-#         print(p[:len(p)], str(sa_str[m])[:len(p)])        
-#     elif p < str(sa_str[m]):
-#         print('less')
-#         l = l
-#         r = m
-#         m = (r+l)//2
+class search_bs:
+    def __init__(self, S):
+        self.S = S
+        self.sa = naive_sa.sa(S)[0]
 
 
-# print(m)
+    def find_start_pos(self, p):
+        j = -1
+        L = 0
+        R = len(S) - 1
+        # print('sa')
+        # print('==========')
+        # for _i, i in enumerate(self.sa):
+        #     print(f'{_i}: {i} {S[i:]}')
+        # print('==========')
 
-p = 'i'
+        #while True:
+        for i in range(int(log2(len(S))+2)):
+            M = -(-(R+L)//2) # ceiling integer division
+            m_str = S[self.sa[M]:self.sa[M]+len(p)]
 
-j = -1
-L = 0
-R = len(S) - 1
 
-while True:
-    M = -(-(R+L)//2) # ceiling integer division
-    oL, oM, oR = L, M, R
-    print(L, M, R)
-    print('comparing:', p, S[sa[M]:sa[M]+len(p)])
 
-    if p == S[sa[M]:sa[M]+len(p)]:
-        j = sa[M]
-        print('same')
 
-    elif p > S[sa[M]:sa[M]+len(p)]:
-        L = M
-        print('more')
-    else:
-        R = M
-        print('less')
-    
-    
-    if (L == oL and M == oM and R == oR) or j != -1:
-        break
+            if p == m_str:
+                j = self.sa[M]
 
-print(j)
 
+            elif p > m_str:
+                L = M
+
+            elif p < m_str:
+
+                R = M-1
+
+            
+            if j != -1:
+                break
+
+
+
+        print(j)
+
+
+
+S = 'noteuhsnatoheisthaosneuthsaonteidstaoheusnthaoseintdsanoteuhsnatoesitdasoethntaheduntahoudntaoheduthedunitaonstuehontehuidsantoehunst'
+
+
+o = search_bs(S)
+for i in range(len(S)):
+    string = S[i:]
+    print(string, end = ' ')
+    o.find_start_pos(string)
+o.find_start_pos(''.join([i for i in reversed(S)]))
+
+# Når startpositionen er fundet, skal vi fortsætte indtil de næstkommede naboer ikke længere indeholder det samme.

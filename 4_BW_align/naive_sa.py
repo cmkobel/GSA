@@ -1,25 +1,16 @@
-
-
 class sp:
     def __init__(self, start, end):
         self.start = start
         self.end = end
         
-
     def __str__(self):
         return bytes((S[self.start:self.end])).decode('utf-8')
 
     def __lt__(self, other):
         return bytes((S[self.start:self.end])) < bytes((S[other.start:other.end]))
 
-    # def __gt__(self, other):
-    #     return bytes((S[self.start:self.end])) > bytes((S[other.start:other.end]))
-
     def __repr__(self):
         return '<' + self.__str__() + '>'
-
-
-
 
 
 def set_S(input):
