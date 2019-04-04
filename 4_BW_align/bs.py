@@ -49,6 +49,7 @@ class search_bs:
             return positions
 
 
+
 if __name__ == '__main__':
     o = search_bs('mississippi')
     print(o.find_positions('iss'))
