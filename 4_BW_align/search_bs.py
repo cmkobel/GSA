@@ -1,55 +1,38 @@
-import naive_sa
-from math import ceil, log2
+import bs
+from parsers import parse_fasta, parse_fastq
+import sys
 
-class search_bs:
-    def __init__(self, S):
-        self.S = S
-        self.sa = naive_sa.sa(S)[0]
-
-
-    def find_positions(self, pattern):
-        """ Finds all matches of pattern in the string S. """
-        
-        def find_start_position(pattern):
-            """ Binary search.
-                The position returned by this function should be the first of the suffix arrays that equals the pattern. """
-            
-            j = -1
-            left = 0
-            right = len(S) - 1
-            theoretical_max = int(ceil(log2(len(S))))
-            for i in range(theoretical_max):
-                middle = -(-(right+left)//2) # ceiling integer division
-                middle_string = S[self.sa[middle]:self.sa[middle]+len(pattern)]
-
-                if pattern == middle_string:
-                    j = self.sa[middle]
-                elif pattern > middle_string:
-                    left = middle
-                elif pattern < middle_string:
-                    right = middle-1 # Because the pattern is in the upper part, we can exclude the lower.
-                
-                if j != -1:
-                    break
-
-            return middle, j # The index of SA that contains the matching string.
-
-        start_position, j = find_start_position(pattern)
-        if j == -1:
-            return []
-        else:
-            positions = [self.sa[start_position]] # Add the first element for free.
-            for i in self.sa[start_position+1:]:
-                if S[i:i+len(pattern)] == pattern:
-                    positions.append(i)
-                else:
-                    break
-
-            return [(i, S[i:i+len(pattern)]) for i in positions]
+genome_file = sys.argv[1]
+reads_file = sys.argv[2]
+    
 
 
-S = 'mississippi'
-o = search_bs(S)
-print(o.find_positions('iss'))
+for genome in parse_fasta(genome_file):
+    
+    for read in parse_fastq(reads_file):
+
+        # st = st2(genome['sequence'])
+        # st.construct_tree()
+
+        o = bs.search_bs(genome['sequence'])
+
+
+
+        for match in o.find_positions(read['sequence']):
+
+            print(f"\
+{read['title']}\t\
+0\t\
+{genome['title']}\t\
+{match+1}\t\
+0\t\
+{len(read['sequence'])}M\t\
+*\t\
+0\t\
+0\t\
+{read['sequence']}\t\
+{len(read['sequence'])*'~'}")
+
+
 
 
