@@ -28,7 +28,7 @@ class search_bs:
                     left = middle
                 elif pattern < middle_string:
                     right = middle-1 # Because the pattern is in the upper part, we can exclude the lower.
-                
+
                 if j != -1:
                     break
 
