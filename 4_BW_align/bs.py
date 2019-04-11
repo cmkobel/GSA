@@ -4,7 +4,11 @@ from math import ceil, log2
 class search_bs:
     def __init__(self, S):
         self.S = S
-        self.sa = naive_sa.sa(S)[0]
+        self.sa, self.sa_str = naive_sa.sa(S)
+
+        # for i,j in zip(self.sa, self.sa_str):
+        #     print(i, j)
+        # print()
 
 
     def find_positions(self, pattern):
@@ -17,10 +21,10 @@ class search_bs:
             j = -1
             left = 0
             right = len(self.S) - 1
-            theoretical_max = int(ceil(log2(len(self.S))))
+            theoretical_max = int(ceil(log2(len(self.S)))) +1
             for i in range(theoretical_max):
                 middle = -(-(right+left)//2) # ceiling integer division
-                middle_string = self.S[self.sa[middle]:self.sa[middle]+len(pattern)]
+                middle_string = self.S[self.sa[middle]:self.sa[middle]+len(pattern)] # prefixed
 
                 if pattern == middle_string:
                     j = self.sa[middle]
@@ -34,12 +38,22 @@ class search_bs:
 
             return middle, j # The index of SA that contains the matching string.
 
+
         start_position, j = find_start_position(pattern)
-        if j == -1:
+        if j == -1: # ingen matches
             return []
         else:
-            positions = [self.sa[start_position]] # Add the first element for free.
-            for i in self.sa[start_position+1:]:
+            positions = []
+            for i in self.sa[start_position:]:
+                #print('sa', i)
+                if self.S[i:i+len(pattern)] == pattern:
+                    positions.append(i)
+                else:
+                    break
+
+
+            for i in reversed(self.sa[:start_position]):
+                #print('sa', i)
                 if self.S[i:i+len(pattern)] == pattern:
                     positions.append(i)
                 else:
@@ -51,5 +65,13 @@ class search_bs:
 
 
 if __name__ == '__main__':
-    o = search_bs('mississippi')
-    print(o.find_positions('iss'))
+    S = 'mississippi'
+    
+    o = search_bs(S)
+
+    print(o.find_positions('i'))
+
+    print('testingall')
+    for _i, i in enumerate(S):
+
+        print(o.find_positions(S[_i:]))

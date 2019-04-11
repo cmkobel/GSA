@@ -2,7 +2,7 @@ import naive_sa
 from t4 import t4_genome as t4
 
 
-class bwt:
+class search_bwt:
     def __init__(self, S):
 
         self.S = S.lower() + '$'
@@ -22,7 +22,6 @@ class bwt:
 
 
         self.inv_alph = {j: i for i, j in enumerate(self.alphabet)} # reverse lookup in alphabet f('$') = 0
-
 
 
 
@@ -100,10 +99,8 @@ class bwt:
         i = len(pattern)-1
 
         while i >= 0 and L <= R:
+
             # compute L(w[i...m]) from L(w[i+1...m])
-            # if L == 0:
-            #     L = self.C_table[self.inv_alph[pattern[i]]] + 1
-            # else:
             L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
 
             # compute R(w[i...m]) from R(w[i+1...m])
@@ -111,18 +108,24 @@ class bwt:
             i -= 1
 
         if i < 0 and L <= R:
-            #print(L, R,[i for i in range(L, R+1)])
-            return [str(self.sa_str[i])[:len(pattern)] for i in range(L, R+1)]
+            #print(L, R)
+            #return [str(self.sa_str[i])[:len(pattern)] for i in range(L, R+1)]
+            return [self.sa[i] for i in range(L, R+1)]
         else:
-            #print(L, R, [i for i in range(L, R+1)])
+            #print(L,R)
             return []
 
 
 
-o = bwt('mississippi')
-#print(o.find_positions('i'))
+if __name__ == "__main__":
 
-S = 'mississippi'
-for _i, i in enumerate(S):
-    p = S[_i:]
-    print(p, o.find_positions(p))
+    o = search_bwt('mississippi')
+    print(o.find_positions('ssissip'))
+    print(o.find_positions('iss'))
+    print(o.find_positions('ss'))
+
+
+    S = 'mississippi'
+    for _i, i in enumerate(S):
+        p = S[_i:]
+        print(p, o.find_positions(p))
