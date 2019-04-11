@@ -94,8 +94,6 @@ class bwt:
         print()
 
     def find_positions(self, pattern):
-        print(self.S)
-
 
         L = 0
         R = len(self.S)-1
@@ -113,13 +111,18 @@ class bwt:
             i -= 1
 
         if i < 0 and L <= R:
-            print(L, R,[i for i in range(L, R+1)])
-            return [str(self.sa_str[i]) for i in range(L, R+1)]
+            #print(L, R,[i for i in range(L, R+1)])
+            return [str(self.sa_str[i])[:len(pattern)] for i in range(L, R+1)]
         else:
-            print(L, R, [i for i in range(L, R+1)])
+            #print(L, R, [i for i in range(L, R+1)])
             return []
 
 
 
 o = bwt('mississippi')
-print(o.find_positions('i'))
+#print(o.find_positions('i'))
+
+S = 'mississippi'
+for _i, i in enumerate(S):
+    p = S[_i:]
+    print(p, o.find_positions(p))
