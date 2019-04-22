@@ -3,8 +3,9 @@ from t4 import t4_genome as t4
 
 
 class search_bwt:
-    def __init__(self, S):
+    def __init__(self, title, S):
         """ Common to both preprocess and search. """
+        self.title = title
         self.sentinel = '$'
         self.S = S.lower() + self.sentinel
 
@@ -21,12 +22,11 @@ class search_bwt:
 
         self.O = self.compute_O_table()
 
-
-
-    def main_search(self, S, sa):
-
-
         self.inv_alph = {j: i for i, j in enumerate(self.alphabet)} # reverse lookup in alphabet f('$') = 0
+
+    #def main_search(self, S, sa):
+
+
 
 
 
@@ -118,6 +118,7 @@ class search_bwt:
 
 
 if __name__ == "__main__":
+    """ This main is outdated. """
 
     S = 'mississippi'
     

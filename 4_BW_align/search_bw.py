@@ -28,7 +28,7 @@ if sys.argv[1] == '-p':
 
     for _i, genome in enumerate(parse_fasta(genome_file)):
         print('\t', _i, ': preprocessing ', genome['title'], sep = '')
-        o = bwt.search_bwt(genome['sequence']) # One object for each genome.
+        o = bwt.search_bwt(genome['title'], genome['sequence']) # One object for each genome.
         o.main_preprocess()
         dictionary[_i] = o
 
@@ -50,20 +50,38 @@ if sys.argv[1] == '-p':
 
 
 
-# elif sys.argv[1] == '-i':
-#     """ Import files and search. """
-#     state = 'search'
-#     reads_file = sys.argv[2]
-#     preprocessed_file = 'preprocessed_sequences.pickle' 
-#     print('will map reads from', reads_file, 'onto sequence(s) from', preprocessed_file)
+elif sys.argv[1] == '-i':
+    """ Import files and search. """
+    state = 'search'
+    reads_file = sys.argv[2]
+    preprocessed_file = 'preprocessed_sequences.pickle' 
+    #print('will map reads from', reads_file, 'onto sequence(s) from', preprocessed_file)
 
-#     with open(preprocessed_file, 'rb') as file:
-#         dictionary = pickle.load(file)
+    with open(preprocessed_file, 'rb') as file:
+        dictionary = pickle.load(file)
 
-#     for i in dictionary: # Analogous to for genome in genome_file:
-#         o = dictionary[i]
+    for i in dictionary: # Analogous to: for genome in genome_file:
+        o = dictionary[i]
 
-#         for read in parse_fastq(reads_file)
+        for read in parse_fastq(reads_file):
+            #print(read['title'])
+            #print(o.find_positions(read['sequence']))
+
+            for match in o.find_positions(read['sequence']):
+
+                print(f"\
+{read['title']}\t\
+0\t\
+{o.title}\t\
+{match+1}\t\
+0\t\
+{len(read['sequence'])}M\t\
+*\t\
+0\t\
+0\t\
+{read['sequence']}\t\
+{len(read['sequence'])*'~'}")
+
 
 
 
