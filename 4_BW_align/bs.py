@@ -4,11 +4,12 @@ from math import ceil, log2
 class search_bs:
     def __init__(self, title, S):
         self.title = title
-        self.S = S
+        self.S = S.lower() + '$'
 
     
     def preprocess(self):
         self.sa = naive_sa.sa(self.S)[0]
+        print(self.sa)
 
 
 

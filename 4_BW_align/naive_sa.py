@@ -1,4 +1,5 @@
 class sp:
+    """ Cumbersome suffix pointer as an object in python. """
     def __init__(self, start, end):
         self.start = start
         self.end = end
@@ -18,7 +19,7 @@ def set_S(input):
 def sa(input):
     """ Slower, but less memory. """
 
-    #set_S(bytes(input + '$', 'utf-8'))
+    #set_S(bytes(input + '$', 'utf-8')) # Somehow the sentinel was added already.
     set_S(bytes(input, 'utf-8'))
 
     sufs = [(i, sp(i, len(S))) for i in range(len(S))]    
