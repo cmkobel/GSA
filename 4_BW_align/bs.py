@@ -2,13 +2,15 @@ import naive_sa
 from math import ceil, log2
 
 class search_bs:
-    def __init__(self, S):
+    def __init__(self, title, S):
+        self.title = title
         self.S = S
-        self.sa = naive_sa.sa(S)[0]
 
-        # for i,j in zip(self.sa, self.sa_str):
-        #     print(i, j)
-        # print()
+    
+    def preprocess(self):
+        self.sa = naive_sa.sa(self.S)[0]
+
+
 
 
     def find_positions(self, pattern):
@@ -66,7 +68,10 @@ class search_bs:
 if __name__ == '__main__':
     S = 'mississippi'
     
-    o = search_bs(S)
+    o = search_bs('first', S)
+    o.preprocess()
+
+
 
     print(o.find_positions('i'))
 

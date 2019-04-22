@@ -1,29 +1,77 @@
 import bs
 from parsers import parse_fasta, parse_fastq
 import sys
+import pickle
 
-genome_file = sys.argv[1]
-reads_file = sys.argv[2]
+"""
+Usage:
+
+python3 search_bs.py -p <reference.fasta>            Preprocess only. 
+python3 search_bs.py -i <reads.fastq>                Import preprocessed file and search only.
+
+
+
+"""
+
+
+if sys.argv[1] == '-p':
+    """ Preprocess only. """
+    state = 'preprocess'
+    genome_file = sys.argv[2]
+    print('will preprocess', genome_file)
+    #out_file = '.'.join(genome_file.split('/')[-1].split('.')[0:-1]) + '.pickle' # isolate file name from path and extension.
+    out_file = 'preprocessed_sequences_bs.pickle' # Use the same file name.
+
+
+    dictionary = {} # Collects all the objects.
+
+    for _i, genome in enumerate(parse_fasta(genome_file)):
+        print('\t', _i, ': preprocessing ', genome['title'], sep = '')
+        o = bs.search_bs(genome['title'], genome['sequence']) # One object for each genome.
+        o.preprocess()
+        dictionary[_i] = o
+
     
+    # Save dictionary with objects of all sequences to disk with pickle.
+    with open(out_file, 'wb') as file:
+        pickle.dump(dictionary, file)
+        print()
+        print('Successfully saved to:')
+        print()
+        print('\t' + out_file)
+
+    print()
+    print('Use these preprocessed sequences with a .fastq file containing reads by typing:')
+    print()
+    print('\tpython3 search_bw.py -i <reads_file.fastq>')
+    print()
 
 
-for genome in parse_fasta(genome_file):
-    
-    for read in parse_fastq(reads_file):
-
-        # st = st2(genome['sequence'])
-        # st.construct_tree()
-
-        o = bs.search_bs(genome['sequence'])
 
 
+elif sys.argv[1] == '-i':
+    """ Import files and search. """
+    state = 'search'
+    reads_file = sys.argv[2]
+    preprocessed_file = 'preprocessed_sequences_bs.pickle' 
+    #print('will map reads from', reads_file, 'onto sequence(s) from', preprocessed_file)
 
-        for match in o.find_positions(read['sequence']):
+    with open(preprocessed_file, 'rb') as file:
+        dictionary = pickle.load(file)
 
-            print(f"\
+    for i in dictionary: # Analogous to: for genome in genome_file:
+        o = dictionary[i]
+
+        for read in parse_fastq(reads_file):
+            #print(read['title'])
+            #print(o.find_positions(read['sequence']))
+
+            for match in o.find_positions(read['sequence']):
+
+                print(f"\
 {read['title']}\t\
 0\t\
-{genome['title']}\t\
+{o.title}\t\
 {match+1}\t\
 0\t\
 {len(read['sequence'])}M\t\
@@ -36,3 +84,4 @@ for genome in parse_fasta(genome_file):
 
 
 
+    
