@@ -4,29 +4,26 @@ from t4 import t4_genome as t4
 
 class search_bwt:
     def __init__(self, S):
+        """ Common to both preprocess and search. """
         self.sentinel = '$'
         self.S = S.lower() + self.sentinel
 
 
+    def main_preprocess(self):
 
+        self.sa = naive_sa.sa(self.S)[0] # suffix array from sort.
 
-    # def main_preprocess(self):
-    #     self.sa, self.sa_str = naive_sa.sa(self.S)
-
-    def main_search(self, sa):
-        self.sa = sa
         self.alphabet = sorted(set(self.S))
 
-        # for _i, (i, j) in enumerate(zip(self.sa, self.sa_str)):
-        #     #print(_i, i, j)
-        #     pass
-
-        # Routine:
         self.bwt = self.compute_bwt()
         
         self.C_table = [i for i in self.compute_C_table()]
 
         self.O = self.compute_O_table()
+
+
+
+    def main_search(self, S, sa):
 
 
         self.inv_alph = {j: i for i, j in enumerate(self.alphabet)} # reverse lookup in alphabet f('$') = 0
@@ -63,6 +60,7 @@ class search_bwt:
     def compute_O_table(self):
         O = [[] for i in range(len(self.S))]
 
+
         row = [0 for i in range(len(self.C_table))]
         for _i, i in enumerate(self.bwt):
 
@@ -79,15 +77,7 @@ class search_bwt:
         return self.O[idx][self.inv_alph[char]]
 
     def present_O(self):
-        """ Pretty prints the O-table for debug. 
-            mississippi$
-                i   p   s   s   m   $   p   i   s   s   i   i   
-            $   0   0   0   0   0   1   1   1   1   1   1   1   
-            i   1   1   1   1   1   1   1   2   2   2   3   4   
-            m   0   0   0   0   1   1   1   1   1   1   1   1   
-            p   0   1   1   1   1   1   2   2   2   2   2   2   
-            s   0   0   1   2   2   2   2   2   3   4   4   4   
-        """
+        """ Pretty prints the O-table for debug. """
         print(self.S)
         print('\t', end = '')
         for char in self.bwt:
@@ -100,6 +90,7 @@ class search_bwt:
             print()
 
         print()
+
 
     def find_positions(self, pattern):
 
@@ -135,7 +126,7 @@ if __name__ == "__main__":
     
 
 
-    # print(o.find_positions('ssissip'))
+    print(o.find_positions('ssissip'))
     # print(o.find_positions('iss'))
     # print(o.find_positions('ss'))
 

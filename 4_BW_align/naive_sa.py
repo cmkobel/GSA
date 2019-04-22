@@ -16,9 +16,11 @@ def set_S(input):
 
 
 def sa(input):
-    """ Slower, but less memory """
+    """ Slower, but less memory. """
 
-    set_S(bytes(input + '$', 'utf-8'))
+    #set_S(bytes(input + '$', 'utf-8'))
+    set_S(bytes(input, 'utf-8'))
+
     sufs = [(i, sp(i, len(S))) for i in range(len(S))]    
     sufs.sort(key = lambda x: x[1])
     
