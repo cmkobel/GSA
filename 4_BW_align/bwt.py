@@ -4,14 +4,22 @@ from t4 import t4_genome as t4
 
 class search_bwt:
     def __init__(self, S):
+        self.sentinel = '$'
+        self.S = S.lower() + self.sentinel
 
-        self.S = S.lower() + '$'
-        self.sa, self.sa_str = naive_sa.sa(self.S)
+
+
+
+    # def main_preprocess(self):
+    #     self.sa, self.sa_str = naive_sa.sa(self.S)
+
+    def main_search(self, sa):
+        self.sa = sa
         self.alphabet = sorted(set(self.S))
 
-        for _i, (i, j) in enumerate(zip(self.sa, self.sa_str)):
-            #print(_i, i, j)
-            pass
+        # for _i, (i, j) in enumerate(zip(self.sa, self.sa_str)):
+        #     #print(_i, i, j)
+        #     pass
 
         # Routine:
         self.bwt = self.compute_bwt()
@@ -22,6 +30,7 @@ class search_bwt:
 
 
         self.inv_alph = {j: i for i, j in enumerate(self.alphabet)} # reverse lookup in alphabet f('$') = 0
+
 
 
 
@@ -119,13 +128,19 @@ class search_bwt:
 
 if __name__ == "__main__":
 
-    o = search_bwt('mississippi')
-    print(o.find_positions('ssissip'))
-    print(o.find_positions('iss'))
-    print(o.find_positions('ss'))
-
-
     S = 'mississippi'
-    for _i, i in enumerate(S):
-        p = S[_i:]
-        print(p, o.find_positions(p))
+    
+    o = search_bwt(S)
+    o.main_search(naive_sa.sa(S)[0])
+    
+
+
+    # print(o.find_positions('ssissip'))
+    # print(o.find_positions('iss'))
+    # print(o.find_positions('ss'))
+
+
+    # S = 'mississippi'
+    # for _i, i in enumerate(S):
+    #     p = S[_i:]
+    #     print(p, o.find_positions(p))

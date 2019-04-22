@@ -4,7 +4,7 @@ from math import ceil, log2
 class search_bs:
     def __init__(self, S):
         self.S = S
-        self.sa, self.sa_str = naive_sa.sa(S)
+        self.sa = naive_sa.sa(S)[0]
 
         # for i,j in zip(self.sa, self.sa_str):
         #     print(i, j)
@@ -21,7 +21,7 @@ class search_bs:
             j = -1
             left = 0
             right = len(self.S) - 1
-            theoretical_max = int(ceil(log2(len(self.S)))) +1
+            theoretical_max = int(ceil(log2(len(self.S))))
             for i in range(theoretical_max):
                 middle = -(-(right+left)//2) # ceiling integer division
                 middle_string = self.S[self.sa[middle]:self.sa[middle]+len(pattern)] # prefixed
@@ -30,7 +30,7 @@ class search_bs:
                     j = self.sa[middle]
                 elif pattern > middle_string:
                     left = middle
-                elif pattern < middle_string:
+                else:
                     right = middle-1 # Because the pattern is in the upper part, we can exclude the lower.
 
                 if j != -1:
@@ -43,9 +43,9 @@ class search_bs:
         if j == -1: # ingen matches
             return []
         else:
-            positions = []
-            for i in self.sa[start_position:]:
-                #print('sa', i)
+            #positions = []
+            positions = [self.sa[start_position]] # Add first element for free.
+            for i in self.sa[start_position+1:]:
                 if self.S[i:i+len(pattern)] == pattern:
                     positions.append(i)
                 else:
@@ -53,7 +53,6 @@ class search_bs:
 
 
             for i in reversed(self.sa[:start_position]):
-                #print('sa', i)
                 if self.S[i:i+len(pattern)] == pattern:
                     positions.append(i)
                 else:
