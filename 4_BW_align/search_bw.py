@@ -21,7 +21,7 @@ if sys.argv[1] == '-p':
     genome_file = sys.argv[2]
     print('will preprocess', genome_file)
     #out_file = '.'.join(genome_file.split('/')[-1].split('.')[0:-1]) + '.pickle' # isolate file name from path and extension.
-    out_file = 'preprocessed_sequences.pickle' # Use the same file name.
+    out_file = 'preprocessed_sequences_bw.pickle' # Use the same file name.
 
 
     dictionary = {} # Collects all the objects.
@@ -54,7 +54,7 @@ elif sys.argv[1] == '-i':
     """ Import files and search. """
     state = 'search'
     reads_file = sys.argv[2]
-    preprocessed_file = 'preprocessed_sequences.pickle' 
+    preprocessed_file = 'preprocessed_sequences_bw.pickle' 
     #print('will map reads from', reads_file, 'onto sequence(s) from', preprocessed_file)
 
     with open(preprocessed_file, 'rb') as file:
