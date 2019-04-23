@@ -17,7 +17,7 @@ class search_bwt:
         self.alphabet = sorted(set(self.S))
 
         self.bwt = self.compute_bwt()
-        
+
         self.C_table = [i for i in self.compute_C_table()]
 
         self.O = self.compute_O_table()
@@ -72,7 +72,7 @@ class search_bwt:
 
 
     # Helper funcs/vars for O and C-table
-    
+
     def access_O(self, char, idx):
         return self.O[idx][self.inv_alph[char]]
 
@@ -121,10 +121,10 @@ if __name__ == "__main__":
     """ This main is outdated. """
 
     S = 'mississippi'
-    
+
     o = search_bwt(S)
     o.main_search(naive_sa.sa(S)[0])
-    
+
 
 
     print(o.find_positions('ssissip'))

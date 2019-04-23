@@ -6,7 +6,7 @@ import pickle
 """
 Usage:
 
-python3 search_bs.py -p <reference.fasta>            Preprocess only. 
+python3 search_bs.py -p <reference.fasta>            Preprocess only.
 python3 search_bs.py -i <reads.fastq>                Import preprocessed file and search only.
 
 
@@ -14,11 +14,11 @@ python3 search_bs.py -i <reads.fastq>                Import preprocessed file an
 """
 
 
-if sys.argv[1] == '-p':
+if sys.argv[1] == '-p' or sys.argv[1] == '--preprocess':
     """ Preprocess only. """
     state = 'preprocess'
     genome_file = sys.argv[2]
-    print('will preprocess', genome_file)
+    print('Will preprocess', genome_file)
     #out_file = '.'.join(genome_file.split('/')[-1].split('.')[0:-1]) + '.pickle' # isolate file name from path and extension.
     out_file = 'preprocessed_sequences_bs.pickle' # Use the same file name.
 
@@ -31,7 +31,7 @@ if sys.argv[1] == '-p':
         o.preprocess()
         dictionary[_i] = o
 
-    
+
     # Save dictionary with objects of all sequences to disk with pickle.
     with open(out_file, 'wb') as file:
         pickle.dump(dictionary, file)
@@ -49,7 +49,7 @@ if sys.argv[1] == '-p':
 
 
 
-elif sys.argv[1] == '-i':
+elif sys.argv[1] == '-i' or sys.argv[1] == '--import':
     """ Import files and search. """
     state = 'search'
     reads_file = sys.argv[2]
@@ -66,7 +66,7 @@ elif sys.argv[1] == '-i':
             #print(read['title'])
             #print(o.find_positions(read['sequence']))
 
-            for match in o.find_positions(read['sequence']):
+            for match in o.find_positions(read['sequence'].lower()):
 
                 print(f"\
 {read['title']}\t\

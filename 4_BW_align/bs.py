@@ -6,21 +6,21 @@ class search_bs:
         self.title = title
         self.S = S.lower() + '$'
 
-    
+
     def preprocess(self):
         self.sa = naive_sa.sa(self.S)[0]
-        print(self.sa)
+
 
 
 
 
     def find_positions(self, pattern):
         """ Finds all matches of pattern in the string S. """
-        
+
         def find_start_position(pattern):
             """ Binary search.
                 The position returned by this function should be the first of the suffix arrays that equals the pattern. """
-            
+
             j = -1
             left = 0
             right = len(self.S) - 1

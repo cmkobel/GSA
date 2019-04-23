@@ -15,7 +15,7 @@ python3 search_bw.py -i <reads.fastq>                Import preprocessed file an
 """
 
 
-if sys.argv[1] == '-p':
+if sys.argv[1] == '-p' or sys.argv[1] == '--preprocess':
     """ Preprocess only. """
     state = 'preprocess'
     genome_file = sys.argv[2]
@@ -50,7 +50,7 @@ if sys.argv[1] == '-p':
 
 
 
-elif sys.argv[1] == '-i':
+elif sys.argv[1] == '-i' or sys.argv[1] == '--import':
     """ Import files and search. """
     state = 'search'
     reads_file = sys.argv[2]
@@ -67,7 +67,7 @@ elif sys.argv[1] == '-i':
             #print(read['title'])
             #print(o.find_positions(read['sequence']))
 
-            for match in o.find_positions(read['sequence']):
+            for match in o.find_positions(read['sequence'].lower()):
 
                 print(f"\
 {read['title']}\t\
