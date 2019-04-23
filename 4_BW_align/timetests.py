@@ -55,7 +55,7 @@ if False:
         print(t1 - t0)
 
 
-# Binary search searching
+# Burrows wheeler searching. 
 if True:
     print('n, t')
 
