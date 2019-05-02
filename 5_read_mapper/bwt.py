@@ -3,32 +3,24 @@ from t4 import t4_genome as t4
 
 
 class search_bwt:
-    def __init__(self, title, S):
+    def __init__(self, S, title = 'anonymous_read'):
         """ Common to both preprocess and search. """
-        self.title = title
+        self.title = title # Used to keep track of the id of the read.
         self.sentinel = '$'
         self.S = S.lower() + self.sentinel
 
 
     def main_preprocess(self):
-
         self.sa = naive_sa.sa(self.S)[0] # suffix array from sort.
+        self.sa_str = naive_sa.sa(self.S)[1]
+        print([str(i) for i in self.sa_str])
 
         self.alphabet = sorted(set(self.S))
 
         self.bwt = self.compute_bwt()
-
         self.C_table = [i for i in self.compute_C_table()]
-
         self.O = self.compute_O_table()
-
         self.inv_alph = {j: i for i, j in enumerate(self.alphabet)} # reverse lookup in alphabet f('$') = 0
-
-    #def main_search(self, S, sa):
-
-
-
-
 
 
     def compute_bwt(self):
@@ -92,7 +84,8 @@ class search_bwt:
         print()
 
 
-    def find_positions(self, pattern):
+    def iter_exact(self, pattern):
+        """ Iterative exact search. """
 
         L = 0
         R = len(self.S)-1
@@ -107,6 +100,7 @@ class search_bwt:
             R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
             i -= 1
 
+
         if i < 0 and L <= R:
             #print(L, R)
             #return [str(self.sa_str[i])[:len(pattern)] for i in range(L, R+1)]
@@ -115,17 +109,63 @@ class search_bwt:
             #print(L,R)
             return []
 
+    def rec_exact(self, pattern):
+        """ Recursive exact search. """
+
+        # Setup.
+        L = 0
+        R = len(self.S)-1
+        i = len(pattern)-1
+        edit = None
+
+
+        def rec(i, edit, L, R):
+            if i < 0: # Base case.
+                return [self.sa[i] for i in range(L, R+1)]
+
+            L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+            # compute R(w[i...m]) from R(w[i+1...m])
+            R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+            
+            if L <= R:
+                return rec(i-1, edit, L, R)
+
+        return rec(i, edit, L, R)
+
+    
+    def rec_edits(self, pattern):
+        """ Recursive edit search. """
+
+        # Setup.
+        L = 0
+        R = len(self.S)-1
+        i = len(pattern)-1
+        edit = None
+
+
+        def rec(i, edit, L, R):
+            if i < 0: # Base case.
+                return [self.sa[i] for i in range(L, R+1)]
+
+            L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+            # compute R(w[i...m]) from R(w[i+1...m])
+            R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+            
+            if L <= R:
+                return rec(i-1, edit, L, R)
+
+        return rec(i, edit, L, R)
+
+
+
 
 
 if __name__ == "__main__":
-    """ This main is outdated. """
 
     S = 'mississippi'
 
-    o = search_bwt('anything', S)
+    o = search_bwt(S)
     o.main_preprocess()
 
-
-
-    print(o.find_positions('ssissip'))
+    print(o.iter_exact('si'))
 

@@ -33,22 +33,21 @@ fancyarrange2 = function(p1, p2, sometitle, somesubtitle) {
 # 1 Binary search: preprocessing
 prep_bs <- read_csv("bs_prep.csv")
 
-
 p_prep_bs1 = prep_bs %>% ggplot(aes(n, t)) + geom_line() + labs(y = "t [s]", x = "") #+ labs(title = 'some subtitle')
 p_prep_bs2 = prep_bs %>% ggplot(aes(n, t/(n*log(n)))) + geom_line() + labs(x = "")
 p_prep_bs3 = prep_bs %>% ggplot(aes(n, t/(n*sqrt(n)))) + geom_line() + labs(x = "")
 p_prep_bs4 = prep_bs %>% ggplot(aes(n, t/(n^2))) + geom_line()
 
-
-
-fancyarrange3(p_prep_bs1, p_prep_bs3, p_prep_bs4, 'Binary Search: preprocessing', 'Creating a suffix array and sorting naively.\nEnterobacteria phage T4 genome.')
+#fancyarrange3(p_prep_bs1, p_prep_bs3, p_prep_bs4, 'Binary Search: preprocessing', 'Creating a suffix array and sorting naively.\nEnterobacteria phage T4 genome.')
 
 
 # 2 Binary search: searching
 bs_search <- read_csv("bs_search.csv")
 
 p_bs_search1 = bs_search %>% ggplot(aes(n, t)) + geom_point(alpha = 0.5, size = 1) + labs(y = "t [s]", x= "")# title = "Binary Search: searching", subtitle = "Searching for reads with size n.\nEnterobacteria phage T4 genome.")
-p_bs_search2 = bs_search %>% ggplot(aes(n, t/n)) + geom_point(alpha = 0.5, size = 1)
+p_bs_search2 = bs_search %>% ggplot(aes(n, t/(log(n)))) + geom_point(alpha = 0.5, size = 1)
+
+
 
 fancyarrange2(p_bs_search1, p_bs_search2,  'Binary Search: searching', 'Searching for read with size n.\nEnterobacteria phage T4 genome.')
 
@@ -56,77 +55,21 @@ fancyarrange2(p_bs_search1, p_bs_search2,  'Binary Search: searching', 'Searchin
 # 3 BW: preprocessing
 prep_bw <- read_csv("bw_prep.csv")
 
-
 p_prep_bw1 = prep_bw %>% ggplot(aes(n, t)) + geom_line() + labs(y = "t [s]", x = "") #+ labs(title = 'some subtitle')
 p_prep_bw2 = prep_bw %>% ggplot(aes(n, t/(n*log(n)))) + geom_line() + labs(x = "")
 p_prep_bw3 = prep_bw %>% ggplot(aes(n, t/(n*sqrt(n)))) + geom_line() + labs(x = "")
 p_prep_bw4 = prep_bw %>% ggplot(aes(n, t/(n^2))) + geom_line()
 
-
-
-fancyarrange3(p_prep_bw1, p_prep_bw2, p_prep_bw4, 'Burrows wheeler: preprocessing', 'Creating: suffix array, c-table, o-table.\nEnterobacteria phage T4 genome.')
+#fancyarrange3(p_prep_bw1, p_prep_bw2, p_prep_bw4, 'Burrows wheeler: preprocessing', 'Creating: suffix array, c-table, o-table.\nEnterobacteria phage T4 genome.')
 
 
 # 4 BW: searching
-
 bw_search <- read_csv("bw_search.csv")
 
 p_bw_search1 = bw_search %>% ggplot(aes(n, t)) + geom_point(alpha = 0.5, size = 1) + labs(y = "t [s]", x= "")# title = "Binary Search: searching", subtitle = "Searching for reads with size n.\nEnterobacteria phage T4 genome.")
 p_bw_search2 = bw_search %>% ggplot(aes(n, t/n)) + geom_point(alpha = 0.5, size = 1)
 
 fancyarrange2(p_bw_search1, p_bw_search2,  'Burrows Wheeler: searching', 'Searching for read with size n.\nEnterobacteria phage T4 genome.')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#sa %>%  mutate(ratio = s/(n^2)) %>%  View
-
-
-# lcp - longest common prefix
-lcp <- read_csv("lcp.csv")
-p_lcp1 = lcp %>% ggplot(aes(n, s)) + geom_point()
-p_lcp2 = lcp %>% ggplot(aes(n, s/(n*sqrt(n)))) + geom_point()
-fancyarrange2(p_lcp1, p_lcp2, 'Longest Common Prefix')
-
-
-# st - suffix tree
-st <- read_csv("st.csv")
-p_st1 = st %>% ggplot(aes(n, s)) + geom_point()
-p_st2 = st %>% ggplot(aes(n, s/(n))) + geom_point()
-p_st3 = st %>% ggplot(aes(n, s/n^2)) + geom_point()
-
-
-fancyarrange3(p_st1, p_st2, p_st3, 'Suffix Tree')
-
 
 
 
