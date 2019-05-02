@@ -145,7 +145,6 @@ class search_bwt:
     def rec_edits(self, pattern, d):
         """ Recursive edit search. """
         results = []
-
         def rec(i, d, L, R, cigar):
             """
             i:      Position in genome.
@@ -153,37 +152,37 @@ class search_bwt:
             L, R:   Left and right pointers in suffix array.
             cigar:  The CIGAR-string for the match. 
             """
+            print((i, d), end = ', ')
 
             if i < 0: # Base case.
                 results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar))
 
+
             L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
             R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+
             
             if L <= R: # At least one match.
 
-                # 1: No edit
+                # Match
                 rec(i-1, d, L, R, 'M' + cigar)
 
-                # # 2: Insertion
-                if d > 0:
-                    rec(i-2, d-1, L, R, 'I' + cigar) # springer en over i genomet. derfor er der en insertion i readen.
-
-
-                # Should be easy, just call recursively with i-2.
-                # Remember to record the cigar string.
-
+            # Insertion
+            if d > 0:
+                rec(i-2, d-1, L, R, 'I' + cigar)
 
 
 
         # Setup.
-        i = len(pattern) - 1
+        i = len(pattern) - 1 # Hvert objekt kan kun have et pattern ad gangen.
         d = d
         L = 0
         R = len(self.S) - 1
         cigar = ''
+        edit = 'match' # match | deletion | insertion | substitution
 
         rec(i, d, L, R, cigar)
+        print()
         return results
 
 
@@ -204,10 +203,9 @@ if __name__ == "__main__":
     with open('working_on_edit_search.pickle', 'rb') as file:
         o = pickle.load(file)
 
-
-    pattern = 'mississsippi'
-    print('i', 'd', 'L', 'R', 'pos', 'cigar', sep = '\t')
-    for i in o.rec_edits(pattern, 1):
+    pattern = 'mississippi'
+    print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
+    for i in o.rec_edits(pattern, 1):        
         print(*i, sep = '\t')
 
 """
