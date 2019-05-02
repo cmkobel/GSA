@@ -154,12 +154,14 @@ class search_bwt:
             """
             #print((i, d, L, R))
 
+            #print(i, (L, R), cigar)
+
             if i < 0: # Base case.
                 return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar))
 
-            # Deletion
+            # Insertion
             if d > 0:
-                rec(i-1, d-1, L, R, 'D' + cigar)
+                rec(i-1, d-1, L, R, 'I' + cigar)
 
             if L <= R: # At least one match.
                 L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
@@ -168,9 +170,6 @@ class search_bwt:
             if L <= R: # At least one match.                
                 # Match
                 rec(i-1, d, L, R, 'M' + cigar)
-
-
-
 
 
         # Setup.
@@ -186,8 +185,6 @@ class search_bwt:
 
 
 
-
-
 if __name__ == "__main__":
 
     S = 'mississippi'
@@ -198,6 +195,7 @@ if __name__ == "__main__":
 
     pattern = 'mississippi'
     print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
+    print('-----------------------------------')
     for i in o.rec_approx(pattern, 1):        
         print(*i, sep = '\t')
 
