@@ -1,4 +1,5 @@
 import naive_sa
+import pickle
 from t4 import t4_genome as t4
 
 
@@ -11,9 +12,18 @@ class search_bwt:
 
 
     def main_preprocess(self):
+        """ Computes and saves anything needed for later searching. """
+
         self.sa = naive_sa.sa(self.S)[0] # suffix array from sort.
-        self.sa_str = naive_sa.sa(self.S)[1]
-        print([str(i) for i in self.sa_str])
+
+        # Debug:
+        if True:
+            self.sa_all = naive_sa.sa(self.S)
+            print('i', 'sa', 'sa_str', sep = '\t')
+            print('-----------------')
+            for h, (i, j) in enumerate(zip(*self.sa_all)):
+                print(h, i, j, sep = '\t')
+            print()
 
         self.alphabet = sorted(set(self.S))
 
@@ -114,12 +124,11 @@ class search_bwt:
 
         # Setup.
         L = 0
-        R = len(self.S)-1
-        i = len(pattern)-1
-        edit = None
+        R = len(self.S) - 1
+        i = len(pattern) - 1
 
 
-        def rec(i, edit, L, R):
+        def rec(i, L, R):
             if i < 0: # Base case.
                 return [self.sa[i] for i in range(L, R+1)]
 
@@ -128,33 +137,54 @@ class search_bwt:
             R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
             
             if L <= R:
-                return rec(i-1, edit, L, R)
+                return rec(i-1, L, R)
 
-        return rec(i, edit, L, R)
+        return rec(i, L, R)
 
     
-    def rec_edits(self, pattern):
+    def rec_edits(self, pattern, d):
         """ Recursive edit search. """
+        results = []
 
-        # Setup.
-        L = 0
-        R = len(self.S)-1
-        i = len(pattern)-1
-        edit = None
+        def rec(i, d, L, R, cigar):
+            """
+            i:      Position in genome.
+            d:      Number of edits left.
+            L, R:   Left and right pointers in suffix array.
+            cigar:  The CIGAR-string for the match. 
+            """
 
-
-        def rec(i, edit, L, R):
             if i < 0: # Base case.
-                return [self.sa[i] for i in range(L, R+1)]
+                results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar))
 
             L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-            # compute R(w[i...m]) from R(w[i+1...m])
             R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
             
-            if L <= R:
-                return rec(i-1, edit, L, R)
+            if L <= R: # At least one match.
 
-        return rec(i, edit, L, R)
+                # 1: No edit
+                rec(i-1, d, L, R, 'M' + cigar)
+
+                # # 2: Insertion
+                if d > 0:
+                    rec(i-2, d-1, L, R, 'I' + cigar) # springer en over i genomet. derfor er der en insertion i readen.
+
+
+                # Should be easy, just call recursively with i-2.
+                # Remember to record the cigar string.
+
+
+
+
+        # Setup.
+        i = len(pattern) - 1
+        d = d
+        L = 0
+        R = len(self.S) - 1
+        cigar = ''
+
+        rec(i, d, L, R, cigar)
+        return results
 
 
 
@@ -164,8 +194,45 @@ if __name__ == "__main__":
 
     S = 'mississippi'
 
-    o = search_bwt(S)
-    o.main_preprocess()
+    # Preprocess to disk.
+    if not True:
+        o = search_bwt(S)
+        o.main_preprocess()
+        with open('working_on_edit_search.pickle', 'wb') as file:
+            pickle.dump(o, file)
 
-    print(o.iter_exact('si'))
+    with open('working_on_edit_search.pickle', 'rb') as file:
+        o = pickle.load(file)
 
+
+    pattern = 'mississsippi'
+    print('i', 'd', 'L', 'R', 'pos', 'cigar', sep = '\t')
+    for i in o.rec_edits(pattern, 1):
+        print(*i, sep = '\t')
+
+"""
+Cigar encoding
+
+op  desc
+M   Alignment match or mismatch 
+I   Insertion to the reference
+D   Deletion from the reference
+"""
+
+
+"""
+i   sa  sa_str
+-----------------
+0   11  $
+1   10  i$
+2   7   ippi$
+3   4   issippi$
+4   1   ississippi$
+5   0   mississippi$
+6   9   pi$
+7   8   ppi$
+8   6   sippi$
+9   3   sissippi$
+10  5   ssippi$
+11  2   ssissippi$
+"""
