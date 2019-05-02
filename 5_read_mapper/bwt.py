@@ -142,7 +142,7 @@ class search_bwt:
         return rec(i, L, R)
 
     
-    def rec_edits(self, pattern, d):
+    def rec_approx(self, pattern, d):
         """ Recursive edit search. """
         results = []
         def rec(i, d, L, R, cigar):
@@ -152,24 +152,24 @@ class search_bwt:
             L, R:   Left and right pointers in suffix array.
             cigar:  The CIGAR-string for the match. 
             """
-            print((i, d), end = ', ')
+            #print((i, d, L, R))
 
             if i < 0: # Base case.
-                results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar))
+                return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar))
 
+            # Deletion
+            if d > 0:
+                rec(i-1, d-1, L, R, 'D' + cigar)
 
-            L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-            R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
-
-            
             if L <= R: # At least one match.
-
+                L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+                R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+            
+            if L <= R: # At least one match.                
                 # Match
                 rec(i-1, d, L, R, 'M' + cigar)
 
-            # Insertion
-            if d > 0:
-                rec(i-2, d-1, L, R, 'I' + cigar)
+
 
 
 
@@ -182,7 +182,6 @@ class search_bwt:
         edit = 'match' # match | deletion | insertion | substitution
 
         rec(i, d, L, R, cigar)
-        print()
         return results
 
 
@@ -193,19 +192,13 @@ if __name__ == "__main__":
 
     S = 'mississippi'
 
-    # Preprocess to disk.
-    if not True:
-        o = search_bwt(S)
-        o.main_preprocess()
-        with open('working_on_edit_search.pickle', 'wb') as file:
-            pickle.dump(o, file)
+    o = search_bwt(S)
+    o.main_preprocess()
 
-    with open('working_on_edit_search.pickle', 'rb') as file:
-        o = pickle.load(file)
 
     pattern = 'mississippi'
     print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
-    for i in o.rec_edits(pattern, 1):        
+    for i in o.rec_approx(pattern, 1):        
         print(*i, sep = '\t')
 
 """
