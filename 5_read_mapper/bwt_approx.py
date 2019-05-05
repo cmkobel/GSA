@@ -128,7 +128,7 @@ class search_bwt:
         i = len(pattern) - 1
 
 
-        def rec(i, L, R):
+        def recursive(i, L, R):
             if i < 0: # Base case.
                 return [self.sa[i] for i in range(L, R+1)]
 
@@ -137,43 +137,45 @@ class search_bwt:
             R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
             
             if L <= R:
-                return rec(i-1, L, R)
+                return recursive(i-1, L, R)
 
-        return rec(i, L, R)
+        return recursive(i, L, R)
 
     
     def rec_approx(self, pattern, d):
         """ Recursive edit search. """
         results = []
-        def rec(i, d, L, R, cigar, skip_i):
+        def recursive(i, d, L, R, cigar, skip_i):
             """
-            i:      Position in genome.
+            i:      Position in pattern.
             d:      Number of edits left.
             L, R:   Left and right pointers in suffix array.
-            cigar:  The CIGAR-string for the match. 
+            cigar:  The CIGAR-string for the match.
             """
 
             #print(i, (L, R), cigar)
 
             if i < 0: # Base case.
-                return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar, skip_i)) # End point of recursion.
+                results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar, skip_i)) # Debug version
+                #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                       Short version
+                return
 
             if d > 0:               
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                rec(i-1, d-1, L, R, 'I' + cigar, skip_i)
+                recursive(i-1, d-1, L, R, 'I' + cigar, skip_i)
 
                 # Delete at this letter (skip_i += 1)
-                rec(i-1, d-1, L, R, 'D' + cigar, skip_i+1) # Jeg har glemt at implementere i ordentligt.
+                recursive(i-1, d-1, L, R, 'D' + cigar, skip_i+1)
 
                 # Substitute
-                rec(i-1, d-1, L, R, 'm' + cigar, skip_i)                
+                recursive(i-1, d-1, L, R, 'm' + cigar, skip_i) # Jeg bruger små m for at kunne differentiere.            
 
             L = self.C_table[self.inv_alph[pattern[i - skip_i]]] + self.access_O(pattern[i - skip_i], L-1) * (L != 0) + 1
             R = self.C_table[self.inv_alph[pattern[i - skip_i]]] + self.access_O(pattern[i - skip_i], R)
             
             if L <= R: # At least one match.                
                 # Match this letter and move on
-                rec(i-1, d, L, R, 'M' + cigar, skip_i)
+                recursive(i-1, d, L, R, 'M' + cigar, skip_i)
                 # Even if there is no match, it should put an M for any substitution.
             
 
@@ -186,7 +188,7 @@ class search_bwt:
         cigar = ''
         skip_i = 0
 
-        rec(i, d, L, R, cigar, skip_i)
+        recursive(i, d, L, R, cigar, skip_i)
         return results
 
 
@@ -197,12 +199,15 @@ if __name__ == "__main__":
 
     o = search_bwt(S)
     o.main_preprocess()
-
+    debug = not True
+    if debug:
+        print('i', 'd', 'L', 'R', 'pos', S, 'skip_i', sep = '\t')
+        print('-----------------------------------')
+        
 
     pattern = 'mississippi'
-    print('i', 'd', 'L', 'R', 'pos', S, 'skip_i', sep = '\t')
-    print('-----------------------------------')
-    for i in o.rec_approx(pattern, 1):        
+    run = o.rec_approx(pattern, 1)
+    for i in run:
         print(*i, sep = '\t')
 
 """
