@@ -158,29 +158,24 @@ class search_bwt:
             if i < 0: # Base case.
                 return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar, skip_i)) # End point of recursion.
 
-            prev_L = L
-            prev_R = R
+            if d > 0:               
+                # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
+                rec(i-1, d-1, L, R, 'I' + cigar, skip_i)
 
-            L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-            R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+                # Delete at this letter (skip_i += 1)
+                rec(i-1, d-1, L, R, 'D' + cigar, skip_i+1) # Jeg har glemt at implementere i ordentligt.
+
+                # Substitute
+                rec(i-1, d-1, L, R, 'm' + cigar, skip_i)                
+
+            L = self.C_table[self.inv_alph[pattern[i - skip_i]]] + self.access_O(pattern[i - skip_i], L-1) * (L != 0) + 1
+            R = self.C_table[self.inv_alph[pattern[i - skip_i]]] + self.access_O(pattern[i - skip_i], R)
             
             if L <= R: # At least one match.                
                 # Match this letter and move on
                 rec(i-1, d, L, R, 'M' + cigar, skip_i)
                 # Even if there is no match, it should put an M for any substitution.
-            else:
-                # Substitute
-                pass
-                #rec(i-1, d-1, L, R, 'm' + cigar, skip_i)                
-
-            if d > 0:               
-
-
-                # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                rec(i-1, d-1, prev_L, prev_R, 'I' + cigar, skip_i)
-
-                # Delete at this letter (skip_i += 1)
-                rec(i-1, d-1, prev_L, prev_R, 'D' + cigar, skip_i+1)
+            
 
 
         # Initialize values.
