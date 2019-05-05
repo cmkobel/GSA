@@ -1,6 +1,6 @@
-import naive_sa
-import pickle
-from t4 import t4_genome as t4
+import naive_sa # Suffix array creation.
+import pickle # Object serialization.
+#from t4 import t4_genome as t4 # Genome for test purposes.
 
 
 class search_bwt:
@@ -173,7 +173,7 @@ class search_bwt:
 
 
         # Setup.
-        i = len(pattern) - 1 # Hvert objekt kan kun have et pattern ad gangen.
+        i = len(pattern) - 1
         d = d
         L = 0
         R = len(self.S) - 1
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     o.main_preprocess()
 
 
-    pattern = 'mississippi'
+    pattern = 'mississipipi'
     print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
     print('-----------------------------------')
     for i in o.rec_approx(pattern, 1):        
