@@ -145,44 +145,53 @@ class search_bwt:
     def rec_approx(self, pattern, d):
         """ Recursive edit search. """
         results = []
-        def rec(i, d, L, R, cigar):
+        def rec(i, d, L, R, cigar, skip_i):
             """
             i:      Position in genome.
             d:      Number of edits left.
             L, R:   Left and right pointers in suffix array.
             cigar:  The CIGAR-string for the match. 
             """
-            #print((i, d, L, R))
 
             #print(i, (L, R), cigar)
 
             if i < 0: # Base case.
-                return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) # End point of recursion.
+                return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar, skip_i)) # End point of recursion.
 
-            # Insertion
-            if d > 0:
-                rec(i-1, d-1, L, R, 'I' + cigar)
-                # By skipping this i without aligning, we give the possibility of a random insertion. One problem is, that if the skipped letter does in fact match, it could still be recorded as not matching.
-                # Instead, it should start matching. And only if it doesn't match should it try and try with an insertion. 3
+            prev_L = L
+            prev_R = R
 
-            if L <= R: # At least one match.
-                L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-                R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+            L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+            R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
             
             if L <= R: # At least one match.                
-                # Match
-                rec(i-1, d, L, R, 'M' + cigar)
+                # Match this letter and move on
+                rec(i-1, d, L, R, 'M' + cigar, skip_i)
+                # Even if there is no match, it should put an M for any substitution.
+            else:
+                # Substitute
+                pass
+                #rec(i-1, d-1, L, R, 'm' + cigar, skip_i)                
+
+            if d > 0:               
 
 
-        # Setup.
+                # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
+                rec(i-1, d-1, prev_L, prev_R, 'I' + cigar, skip_i)
+
+                # Delete at this letter (skip_i += 1)
+                rec(i-1, d-1, prev_L, prev_R, 'D' + cigar, skip_i+1)
+
+
+        # Initialize values.
         i = len(pattern) - 1
         d = d
         L = 0
         R = len(self.S) - 1
         cigar = ''
-        edit = 'match' # match | deletion | insertion | substitution
+        skip_i = 0
 
-        rec(i, d, L, R, cigar)
+        rec(i, d, L, R, cigar, skip_i)
         return results
 
 
@@ -195,8 +204,8 @@ if __name__ == "__main__":
     o.main_preprocess()
 
 
-    pattern = 'mississipipi'
-    print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
+    pattern = 'mississippi'
+    print('i', 'd', 'L', 'R', 'pos', S, 'skip_i', sep = '\t')
     print('-----------------------------------')
     for i in o.rec_approx(pattern, 1):        
         print(*i, sep = '\t')
