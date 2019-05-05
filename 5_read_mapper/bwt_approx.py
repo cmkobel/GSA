@@ -106,7 +106,7 @@ class search_bwt:
             """
 
 
-            print(i, d, (L, R), cigar)
+            #print(i, d, (L, R), cigar)
 
             if i < 0: # Base case.
                 results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) #  Debug version
@@ -119,18 +119,20 @@ class search_bwt:
                 # recursive(i-1, d-1, L, R, 'I' + cigar)
 
 
-                # Delete
-                # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern. 
+
+                # Match the next letter in advance for Delete and Substite.
+                next_letter_in_S = self.S[self.sa[L]-1]
+                next_S_L = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, L-1) * (L != 0) + 1
+                next_S_R = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, R)
                 
 
-                # next_letter_in_S = self.S[self.sa[L]-1]
-                # deletion_L = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], L-1) * (L != 0) + 1
-                # deletion_R = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], R)
-                # recursive(i, d-1, deletion_L, deletion_R, 'D' + cigar)
+                # Delete
+                # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
+                recursive(i, d-1, next_S_L, next_S_R, 'D' + cigar)
 
 
                 # Substitute
-                recursive(i-1, d-1, L, R, 'm' + cigar) # Jeg bruger små m for at kunne differentiere til debug. 
+                recursive(i-1, d-1, next_S_L, next_S_R, 'm' + cigar)
 
 
 
@@ -176,7 +178,7 @@ if __name__ == "__main__":
             print(*i, sep = '\t')
             
 
-    test_single()
+    #test_single()
 
 
 
@@ -194,13 +196,13 @@ if __name__ == "__main__":
                 yield f'{S[:i]}{S[i+1:]}'
 
 
-        for rippling_pattern in ripple_m('m'):
+        for rippling_pattern in ripple_D():
             print(rippling_pattern, end = ' -> ')
             for search_res in o.rec_approx(rippling_pattern, d = 1):
                 print(search_res, end = ', ')
             print()
 
-    #test_multiple()
+    test_multiple()
 
 
 """
