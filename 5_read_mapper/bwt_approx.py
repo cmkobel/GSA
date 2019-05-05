@@ -97,7 +97,7 @@ class search_bwt:
     def rec_approx(self, pattern, d):
         """ Recursive edit search. """
         results = []
-        def recursive(i, d, L, R, cigar):
+        def recurse(i, d, L, R, cigar):
             """
             i:      Position in pattern.
             d:      Number of edits left.
@@ -113,32 +113,32 @@ class search_bwt:
                 #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                Short version
                 return
             
-            next_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-            next_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+            match_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+            match_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
 
-            if d > 0 and next_L > next_R:               
+            if d > 0 and match_L > match_R:               
                 # Insert
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                recursive(i-1, d-1, L, R, 'I' + cigar)
+                recurse(i-1, d-1, L, R, 'I' + cigar)
 
 
                 # Match the next letter in advance for Delete and Substite.
-                next_letter_in_S = self.S[self.sa[L]-1]
-                next_advance_L = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, L-1) * (L != 0) + 1
-                next_advance_R = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, R)
+                next_in_S = self.S[self.sa[L]-1]
+                next_in_S_match_L = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, L-1) * (L != 0) + 1
+                next_in_S_match_R = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, R)
                 
                 # Delete
                 # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
-                recursive(i, d-1, next_advance_L, next_advance_R, 'D' + cigar)
+                recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
 
                 # Substitute
-                recursive(i-1, d-1, next_advance_L, next_advance_R, 'm' + cigar)
+                recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
 
 
             
-            elif next_L <= next_R: # At least one match.                
+            elif match_L <= match_R: # At least one match.                
                 # Match this letter and move on
-                recursive(i-1, d, next_L, next_R, 'M' + cigar)
+                recurse(i-1, d, match_L, match_R, 'M' + cigar)
 
 
         # Initialize values.
@@ -149,7 +149,7 @@ class search_bwt:
         cigar = ''
 
 
-        recursive(i, d, L, R, cigar)
+        recurse(i, d, L, R, cigar)
         return results
 
 
