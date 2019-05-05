@@ -19,7 +19,7 @@ if sys.argv[1] == '-p' or sys.argv[1] == '--preprocess':
     """ Preprocess only. """
     state = 'preprocess'
     genome_file = sys.argv[2]
-    print('will preprocess', genome_file)
+    print('will preprocess', genome_file, '\n')
     #out_file = '.'.join(genome_file.split('/')[-1].split('.')[0:-1]) + '.pickle' # isolate file name from path and extension.
     out_file = 'preprocessed_sequences_bw.pickle' # Use the same file name.
 

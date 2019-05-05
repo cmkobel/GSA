@@ -17,7 +17,7 @@ class search_bwt:
         self.sa = naive_sa.sa(self.S)[0] # suffix array from sort.
 
         # Debug:
-        if True:
+        if not True:
             self.sa_all = naive_sa.sa(self.S)
             print('i', 'sa', 'sa_str', sep = '\t')
             print('-----------------')
