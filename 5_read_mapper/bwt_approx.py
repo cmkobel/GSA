@@ -124,19 +124,19 @@ class search_bwt:
 
                 # Match the next letter in advance for Delete and Substite.
                 next_letter_in_S = self.S[self.sa[L]-1]
-                next_S_L = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, L-1) * (L != 0) + 1
-                next_S_R = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, R)
+                next_advance_L = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, L-1) * (L != 0) + 1
+                next_advance_R = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, R)
                 
                 # Delete
                 # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
-                recursive(i, d-1, next_S_L, next_S_R, 'D' + cigar)
+                recursive(i, d-1, next_advance_L, next_advance_R, 'D' + cigar)
 
                 # Substitute
-                recursive(i-1, d-1, next_S_L, next_S_R, 'm' + cigar)
+                recursive(i-1, d-1, next_advance_L, next_advance_R, 'm' + cigar)
 
 
             
-            if next_L <= next_R: # At least one match.                
+            elif next_L <= next_R: # At least one match.                
                 # Match this letter and move on
                 recursive(i-1, d, next_L, next_R, 'M' + cigar)
 
