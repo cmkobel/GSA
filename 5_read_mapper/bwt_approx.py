@@ -106,6 +106,8 @@ class search_bwt:
             """
 
 
+            print(i, d, (L, R), cigar)
+
             if i < 0: # Base case.
                 results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) #  Debug version
                 #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                Short version
@@ -120,16 +122,17 @@ class search_bwt:
                 # Delete
                 # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern. 
                 
-                # print(self.sa[L], self.S[self.sa[L]-1])
+
                 # next_letter_in_S = self.S[self.sa[L]-1]
                 # deletion_L = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], L-1) * (L != 0) + 1
                 # deletion_R = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], R)
-                #recursive(i, d-1, deletion_L, deletion_R, 'D' + cigar)
+                # recursive(i, d-1, deletion_L, deletion_R, 'D' + cigar)
 
 
                 # Substitute
-                recursive(i-1, d-1, L, R, 'm' + cigar) # Jeg bruger små m for at kunne differentiere til debug.            
-                pass
+                recursive(i-1, d-1, L, R, 'm' + cigar) # Jeg bruger små m for at kunne differentiere til debug. 
+
+
 
             L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
             R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
