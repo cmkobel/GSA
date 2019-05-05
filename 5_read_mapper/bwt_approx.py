@@ -113,11 +113,13 @@ class search_bwt:
                 #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                Short version
                 return
             
+            next_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+            next_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
 
-            if d > 0:               
+            if d > 0 and next_L > next_R:               
+                # Insert
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
                 recursive(i-1, d-1, L, R, 'I' + cigar)
-
 
 
                 # Match the next letter in advance for Delete and Substite.
@@ -125,24 +127,18 @@ class search_bwt:
                 next_S_L = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, L-1) * (L != 0) + 1
                 next_S_R = self.C_table[self.inv_alph[next_letter_in_S]] + self.access_O(next_letter_in_S, R)
                 
-
                 # Delete
                 # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
                 recursive(i, d-1, next_S_L, next_S_R, 'D' + cigar)
-
 
                 # Substitute
                 recursive(i-1, d-1, next_S_L, next_S_R, 'm' + cigar)
 
 
-
-            L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-            R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
             
-            if L <= R: # At least one match.                
+            if next_L <= next_R: # At least one match.                
                 # Match this letter and move on
-                recursive(i-1, d, L, R, 'M' + cigar)
-                # Even if there is no match, it should put an M for any substitution.
+                recursive(i-1, d, next_L, next_R, 'M' + cigar)
 
 
         # Initialize values.
@@ -164,25 +160,25 @@ if __name__ == "__main__":
 
     o = search_bwt(S)
     o.main_preprocess()
-    pattern = 'mississipi'
-    debug = not True
-
-    if debug:
+    pattern = 'mismissippi'
+    
+    debug_header = True
+    if debug_header:
         print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
         print('-----------------------------------')
         
 
     def test_single():
+        """ Used to test a single case. """
         run = o.rec_approx(pattern, 1)
         for i in run:
             print(*i, sep = '\t')
             
-
-    #test_single()
-
+    test_single()
 
 
     def test_multiple():
+        """ Used to test a rippling case. """
         def ripple_I(ins):
             for i in range(len(S)+1):
                 yield f'{S[:i]}{ins}{S[i:]}'
@@ -201,15 +197,15 @@ if __name__ == "__main__":
             for search_res in o.rec_approx(rippling_pattern, d = 1):
                 print(search_res, end = ', ')
             print()
-
-    test_multiple()
+    #test_multiple()
 
 
 """
 Cigar encoding
 
 op  desc
-M   Alignment match or mismatch 
+M   Alignment match or mismatch
+m   substitution 
 I   Insertion to the reference
 D   Deletion from the reference
 """
