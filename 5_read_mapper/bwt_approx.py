@@ -153,31 +153,32 @@ class search_bwt:
             cigar:  The CIGAR-string for the match.
             """
 
-            #print(i, (L, R), cigar)
 
             if i < 0: # Base case.
-                results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar, skip_i)) # Debug version
-                #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                       Short version
+                results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], "".join([i for i in reversed(cigar)]), skip_i)) #  Debug version
+                #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                                                      Short version
                 return
+            
+            #print(i, (L, R), cigar)
 
             if d > 0:               
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                recursive(i-1, d-1, L, R, 'I' + cigar, skip_i)
+                #recursive(i-1, d-1, L, R, cigar + ['I'], skip_i)
 
                 # Delete at this letter (skip_i += 1)
-                recursive(i-1, d-1, L, R, 'D' + cigar, skip_i+1)
+                recursive(i-1, d-1, L, R, cigar + ['D'], skip_i+1)
+                # ^denne ser ikke ud til at virke
 
                 # Substitute
-                recursive(i-1, d-1, L, R, 'm' + cigar, skip_i) # Jeg bruger små m for at kunne differentiere.            
+                #recursive(i-1, d-1, L, R, cigar + ['m'], skip_i) # Jeg bruger små m for at kunne differentiere.            
 
             L = self.C_table[self.inv_alph[pattern[i - skip_i]]] + self.access_O(pattern[i - skip_i], L-1) * (L != 0) + 1
             R = self.C_table[self.inv_alph[pattern[i - skip_i]]] + self.access_O(pattern[i - skip_i], R)
             
             if L <= R: # At least one match.                
                 # Match this letter and move on
-                recursive(i-1, d, L, R, 'M' + cigar, skip_i)
+                recursive(i-1, d, L, R, cigar + ['M'], skip_i)
                 # Even if there is no match, it should put an M for any substitution.
-            
 
 
         # Initialize values.
@@ -185,7 +186,7 @@ class search_bwt:
         d = d
         L = 0
         R = len(self.S) - 1
-        cigar = ''
+        cigar = []
         skip_i = 0
 
         recursive(i, d, L, R, cigar, skip_i)
