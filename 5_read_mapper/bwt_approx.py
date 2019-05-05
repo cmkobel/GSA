@@ -116,7 +116,7 @@ class search_bwt:
 
             if d > 0:               
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                # recursive(i-1, d-1, L, R, 'I' + cigar)
+                recursive(i-1, d-1, L, R, 'I' + cigar)
 
 
 
