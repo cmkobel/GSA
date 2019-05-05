@@ -108,29 +108,27 @@ class search_bwt:
 
             if i < 0: # Base case.
                 results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) #  Debug version
-                #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                                                      Short version
+                #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                Short version
                 return
             
 
-
             if d > 0:               
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                #recursive(i-1, d-1, L, R, 'I' + cigar)
+                # recursive(i-1, d-1, L, R, 'I' + cigar)
 
 
                 # Delete
-                # Prøv at matche det næste bogstav i S
-                # print(i, 'For deletion: trying to match', self.S[self.sa[L]])
-
                 # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern. 
-                print(self.sa[L], self.S[self.sa[L]-1])
-                deletion_L = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], L-1) * (L != 0) + 1
-                deletion_R = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], R)
-                recursive(i, d-1, deletion_L, deletion_R, 'D' + cigar)
+                
+                # print(self.sa[L], self.S[self.sa[L]-1])
+                # next_letter_in_S = self.S[self.sa[L]-1]
+                # deletion_L = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], L-1) * (L != 0) + 1
+                # deletion_R = self.C_table[self.inv_alph[self.S[self.sa[L]-1]]] + self.access_O(self.S[self.sa[L]-1], R)
+                #recursive(i, d-1, deletion_L, deletion_R, 'D' + cigar)
 
 
                 # Substitute
-                #recursive(i-1, d-1, L, R, 'm' + cigar) # Jeg bruger små m for at kunne differentiere.            
+                recursive(i-1, d-1, L, R, 'm' + cigar) # Jeg bruger små m for at kunne differentiere til debug.            
                 pass
 
             L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
@@ -161,16 +159,46 @@ if __name__ == "__main__":
 
     o = search_bwt(S)
     o.main_preprocess()
-    debug = True
+    pattern = 'mississipi'
+    debug = not True
+
     if debug:
         print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
         print('-----------------------------------')
         
 
-    pattern = 'missisippi'
-    run = o.rec_approx(pattern, 1)
-    for i in run:
-        print(*i, sep = '\t')
+    def test_single():
+        run = o.rec_approx(pattern, 1)
+        for i in run:
+            print(*i, sep = '\t')
+            
+
+    test_single()
+
+
+
+    def test_multiple():
+        def ripple_I(ins):
+            for i in range(len(S)+1):
+                yield f'{S[:i]}{ins}{S[i:]}'
+
+        def ripple_m(ins): # substitutions
+            for i in range(len(S)):
+                yield f'{S[:i]}{ins}{S[i+1:]}'
+        
+        def ripple_D():
+            for i in range(len(S)):
+                yield f'{S[:i]}{S[i+1:]}'
+
+
+        for rippling_pattern in ripple_m('m'):
+            print(rippling_pattern, end = ' -> ')
+            for search_res in o.rec_approx(rippling_pattern, d = 1):
+                print(search_res, end = ', ')
+            print()
+
+    #test_multiple()
+
 
 """
 Cigar encoding
