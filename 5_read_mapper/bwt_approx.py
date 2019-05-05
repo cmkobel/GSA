@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
     o = search_bwt(S)
     o.main_preprocess()
-    pattern = 'mismissippi'
+    pattern = 'mississippi'
     
     debug_header = True
     if debug_header:
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         for i in run:
             print(*i, sep = '\t')
             
-    test_single()
+    #test_single()
 
 
     def test_multiple():
@@ -192,12 +192,12 @@ if __name__ == "__main__":
                 yield f'{S[:i]}{S[i+1:]}'
 
 
-        for rippling_pattern in ripple_D():
+        for rippling_pattern in ripple_I('m'):
             print(rippling_pattern, end = ' -> ')
             for search_res in o.rec_approx(rippling_pattern, d = 1):
                 print(search_res, end = ', ')
             print()
-    #test_multiple()
+    test_multiple()
 
 
 """
