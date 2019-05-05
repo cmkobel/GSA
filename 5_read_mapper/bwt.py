@@ -162,6 +162,8 @@ class search_bwt:
             # Insertion
             if d > 0:
                 rec(i-1, d-1, L, R, 'I' + cigar)
+                # By skipping this i without aligning, we give the possibility of a random insertion. One problem is, that if the skipped letter does in fact match, it could still be recorded as not matching.
+                # Instead, it should start matching. And only if it doesn't match should it try and try with an insertion.
 
             if L <= R: # At least one match.
                 L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
