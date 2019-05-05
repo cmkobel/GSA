@@ -157,7 +157,7 @@ class search_bwt:
             #print(i, (L, R), cigar)
 
             if i < 0: # Base case.
-                return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar))
+                return results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) # End point of recursion.
 
             # Insertion
             if d > 0:
