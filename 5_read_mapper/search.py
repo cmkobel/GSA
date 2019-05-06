@@ -7,7 +7,7 @@ import pickle
 Usage:
 
 python3 search_bw.py -p <reference.fasta>            Preprocess only. 
-python3 search_bw.py -i <reads.fastq>                Import preprocessed file and search only.
+python3 search_bw.py -i <reads.fastq> -d <d>         Import preprocessed file and search only.
 
 
 
@@ -50,10 +50,12 @@ if sys.argv[1] == '-p' or sys.argv[1] == '--preprocess':
 
 
 
-elif sys.argv[1] == '-i' or sys.argv[1] == '--import':
+elif sys.argv[1] == '-i' and sys.argv[3] == '-d':
     """ Import files and search. """
     state = 'search'
     reads_file = sys.argv[2]
+    n_edits = int(sys.argv[4])
+    #print(sys.argv)
     preprocessed_file = 'preprocessed_sequences_bw.pickle' 
     #print('will map reads from', reads_file, 'onto sequence(s) from', preprocessed_file)
 
@@ -67,7 +69,7 @@ elif sys.argv[1] == '-i' or sys.argv[1] == '--import':
             #print(read['title'])
             #print(o.find_positions(read['sequence']))
 
-            for match in o.find_positions(read['sequence'].lower()):
+            for match, cigar in o.find_positions(read['sequence'].lower(), n_edits):
 
                 print(f"\
 {read['title']}\t\
@@ -75,7 +77,7 @@ elif sys.argv[1] == '-i' or sys.argv[1] == '--import':
 {o.title}\t\
 {match+1}\t\
 0\t\
-{len(read['sequence'])}M\t\
+{cigar}\t\
 *\t\
 0\t\
 0\t\

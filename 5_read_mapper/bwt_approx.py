@@ -93,6 +93,9 @@ class search_bwt:
 
         print()
 
+
+
+
     
     def rec_approx(self, pattern, d):
         
@@ -110,8 +113,8 @@ class search_bwt:
             #print(i, d, (L, R), cigar)
 
             if i < 0: # Base case.
-                results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) #  Debug version
-                #results.append(([self.sa[i] for i in range(L, R+1)],cigar)) #                Short version
+                #results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) #  Debug version
+                results.append(([self.sa[i] for i in range(L, R+1)], cigar)) #                Short version
                 return
             
             match_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
@@ -156,10 +159,37 @@ class search_bwt:
         return results
 
 
+    
+    def simplify_cigar(self, input):
+
+        prev = input[0]
+        count = 1
+        rv = ''
+        for i in range(1,len(input)):
+            if input[i] == prev:
+                count += 1
+            else:
+                rv += str(count) + prev
+                count = 1
+            
+            prev = input[i]
+
+        rv += str(count) + input[i]
+
+
+        return rv
+
+
+    def find_positions(self, pattern, d):
+        """ Backwards compatibility. """
+        for positions, cigar in self.rec_approx(pattern, d):
+            for position in positions:
+                yield position, self.simplify_cigar(cigar)
+
 
 if __name__ == "__main__":
 
-    S = 'mississippimississippi'
+    S = 'mississippimississippimississippi'
 
     o = search_bwt(S)
     o.main_preprocess()
@@ -173,10 +203,10 @@ if __name__ == "__main__":
     def test_single():
         """ Used to test a single case. """
         run = o.rec_approx(pattern, 1)
-        for i, d, L, R, pos, cigar, in run:
-            print(i, d, L, R, pos, pos[0]*' '+cigar, sep = '\t')
+        for i in run:
+            print(*i, sep = '\t')
             
-    test_single()
+    #test_single()
 
 
     def test_multiple():
@@ -216,7 +246,10 @@ if __name__ == "__main__":
                 print(search_res, end = ', ')
             print()
     
-    test_multiple()
+    #test_multiple()
+
+    for position, cigar in o.find_positions('sippimissi', 1):
+        print(position, cigar)
 
 
 """
