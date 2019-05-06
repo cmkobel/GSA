@@ -121,20 +121,22 @@ class search_bwt:
 
                 # Insert
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                if match_L > match_R or i >= len(pattern)-2: # Det bliver alt for komplekst det her.                                        
-                    recurse(i-1, d-1, L, R, 'I' + cigar)
+                recurse(i-1, d-1, L, R, 'I' + cigar)
 
-                    # Match the next letter in advance for Delete and Substite.
-                    next_in_S = self.S[self.sa[L]-1]
-                    next_in_S_match_L = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, L-1) * (L != 0) + 1
-                    next_in_S_match_R = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, R)
-                    
-                    # Delete
-                    # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
-                    recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
+                # Match the next letter in advance for Delete and Substite.
+                next_in_S = self.S[self.sa[L]-1]
+                next_in_S_match_L = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, L-1) * (L != 0) + 1
+                next_in_S_match_R = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, R)
+                
+                # Delete
+                # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
+                recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
 
-                    # Substitute
+                # Substitute
+                # Substitution is the only thing that only happens when there is a mismatch.
+                if match_L > match_R: # Det bliver alt for komplekst det her.                                        
                     recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
+
 
             
             if match_L <= match_R: # At least one match.                
