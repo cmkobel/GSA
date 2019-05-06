@@ -121,10 +121,8 @@ class search_bwt:
 
                 # Insert
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                recurse(i-1, d-1, L, R, 'I' + cigar)
-                if match_L > match_R:               
-
-
+                if match_L > match_R or i >= len(pattern)-2: # Det bliver alt for komplekst det her.                                        
+                    recurse(i-1, d-1, L, R, 'I' + cigar)
 
                     # Match the next letter in advance for Delete and Substite.
                     next_in_S = self.S[self.sa[L]-1]
@@ -159,25 +157,24 @@ class search_bwt:
 
 if __name__ == "__main__":
 
-    S = 'mississippi'
+    S = 'mississippimississippi'
 
     o = search_bwt(S)
     o.main_preprocess()
-    pattern = 'mississippi'
+    pattern = 'sippimissi'
     
     debug_header = True
     if debug_header:
         print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
-        print('-----------------------------------')
         
 
     def test_single():
         """ Used to test a single case. """
-        run = o.rec_approx('mississippmi', 1)
-        for i in run:
-            print(*i, sep = '\t')
+        run = o.rec_approx(pattern, 1)
+        for i, d, L, R, pos, cigar, in run:
+            print(i, d, L, R, pos, pos[0]*' '+cigar, sep = '\t')
             
-    #test_single()
+    test_single()
 
 
     def test_multiple():
