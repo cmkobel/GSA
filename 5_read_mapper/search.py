@@ -9,11 +9,11 @@ from pathlib import Path as path
 
 parser = argparse.ArgumentParser(description = 'Read mapper based on burrows wheeler with branch and bound approximation.')
 
-prep = parser.add_argument_group('preprocess')
-prep.add_argument('--fasta', type = argparse.FileType('r'), help = 'genome file in fasta format', metavar = 'seqs.fasta')
+prep = parser.add_argument_group('genome preprocessing')
+prep.add_argument('-p', '--fasta', type = argparse.FileType('r'), help = 'genome file in fasta format', metavar = 'seqs_file.fasta')
 
-map = parser.add_argument_group('map')
-map.add_argument('--fastq', type = argparse.FileType('r'), help = 'reads file in fastq format', metavar = 'reads.fastq')
+map = parser.add_argument_group('subsequent read mapping')
+map.add_argument('-i', '--fastq', type = argparse.FileType('r'), help = 'reads file in fastq format', metavar = 'reads_file.fastq')
 map.add_argument('-d', type = int, default = 0, help = 'number of edits, omission leads to exact search', metavar = 'edits')
 
 args = parser.parse_args()
