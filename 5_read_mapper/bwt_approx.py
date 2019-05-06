@@ -95,6 +95,8 @@ class search_bwt:
 
     
     def rec_approx(self, pattern, d):
+
+        
         """ Recursive edit search. """
         results = []
         def recurse(i, d, L, R, cigar):
@@ -117,10 +119,10 @@ class search_bwt:
             match_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
 
             if d > 0 and match_L > match_R:               
+
                 # Insert
                 # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
                 recurse(i-1, d-1, L, R, 'I' + cigar)
-
 
                 # Match the next letter in advance for Delete and Substite.
                 next_in_S = self.S[self.sa[L]-1]
@@ -133,7 +135,6 @@ class search_bwt:
 
                 # Substitute
                 recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
-
 
             
             elif match_L <= match_R: # At least one match.                
