@@ -118,12 +118,13 @@ class search_bwt:
             match_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
 
             if d> 0:
+
+                # Insert
+                # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
                 recurse(i-1, d-1, L, R, 'I' + cigar)
                 if match_L > match_R:               
 
-                    # Insert
-                    # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                    #recurse(i-1, d-1, L, R, 'I' + cigar)
+
 
                     # Match the next letter in advance for Delete and Substite.
                     next_in_S = self.S[self.sa[L]-1]
@@ -132,10 +133,10 @@ class search_bwt:
                     
                     # Delete
                     # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
-                    #recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
+                    recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
 
                     # Substitute
-                    #recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
+                    recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
 
             
             if match_L <= match_R: # At least one match.                
@@ -176,7 +177,7 @@ if __name__ == "__main__":
         for i in run:
             print(*i, sep = '\t')
             
-    test_single()
+    #test_single()
 
 
     def test_multiple():
@@ -216,7 +217,7 @@ if __name__ == "__main__":
                 print(search_res, end = ', ')
             print()
     
-    #test_multiple()
+    test_multiple()
 
 
 """
