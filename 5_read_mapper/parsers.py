@@ -4,8 +4,8 @@
 
 def parse_fasta(input_file):
     """ # Does support multiline fasta files. """
-    with open(input_file) as file:
-        raw = [i.strip() for i in file]
+    #with open(input_file) as file:
+    raw = [i.strip() for i in input_file]
 
     header_lines = [_i for _i, i in enumerate(raw) if i[0:1] == ">"] # alle linjenumre hvor der er en header.
     end_lines = [i-1 for i in header_lines[1:]] + [len(raw)] # linjetal minus en, fra anden header til slut, plus sidste linje.
@@ -44,29 +44,30 @@ def parse_fastq(input_file):
     * support multiline. ?
     """
 
-    with open(input_file) as file:
-        for line in file:
-            if line[0:1] == '@':
-                title = line[1:].strip()
-                
-                sequence = file.__next__().strip()
-                
-                description = file.__next__().strip()
-                if description[0:1] != '+':
-                    raise ValueError('description-row did not start with a + symbol. Every forth row from the 3rd must start with a + symbol.')
+    #with open(input_file) as file:
+    file = iter(input_file)
+    for line in file:
+        if line[0:1] == '@':
+            title = line[1:].strip()
+            
+            sequence = file.__next__().strip()
+            
+            description = file.__next__().strip()
+            if description[0:1] != '+':
+                raise ValueError('description-row did not start with a + symbol. Every forth row from the 3rd must start with a + symbol.')
 
-                quality = file.__next__().strip()
-                if len(quality) != len(sequence):
-                    raise ValueError(f'{title}: length of sequence ({len(sequence)}) is not equal to length of quality ({len(quality)}).')
+            quality = file.__next__().strip()
+            if len(quality) != len(sequence):
+                raise ValueError(f'{title}: length of sequence ({len(sequence)}) is not equal to length of quality ({len(quality)}).')
 
-                rv = {}
-                
-                rv['title'] = title
-                rv['sequence'] = sequence
-                rv['description'] = description
-                rv['quality'] = quality
+            rv = {}
+            
+            rv['title'] = title
+            rv['sequence'] = sequence
+            rv['description'] = description
+            rv['quality'] = quality
 
-                yield rv
+            yield rv
 
 
 
