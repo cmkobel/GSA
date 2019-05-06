@@ -117,26 +117,28 @@ class search_bwt:
             match_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
             match_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
 
-            if d > 0 and match_L > match_R:               
-
-                # Insert
-                # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
+            if d> 0:
                 recurse(i-1, d-1, L, R, 'I' + cigar)
+                if match_L > match_R:               
 
-                # Match the next letter in advance for Delete and Substite.
-                next_in_S = self.S[self.sa[L]-1]
-                next_in_S_match_L = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, L-1) * (L != 0) + 1
-                next_in_S_match_R = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, R)
-                
-                # Delete
-                # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
-                #recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
+                    # Insert
+                    # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
+                    #recurse(i-1, d-1, L, R, 'I' + cigar)
 
-                # Substitute
-                #recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
+                    # Match the next letter in advance for Delete and Substite.
+                    next_in_S = self.S[self.sa[L]-1]
+                    next_in_S_match_L = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, L-1) * (L != 0) + 1
+                    next_in_S_match_R = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, R)
+                    
+                    # Delete
+                    # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
+                    #recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
+
+                    # Substitute
+                    #recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
 
             
-            elif match_L <= match_R: # At least one match.                
+            if match_L <= match_R: # At least one match.                
                 # Match this letter and move on
                 recurse(i-1, d, match_L, match_R, 'M' + cigar)
 
