@@ -21,7 +21,7 @@ args = parser.parse_args()
 
 
 if hasattr(args.fasta, 'read'):
-    print('preprocessing', args.fasta)
+    #print('preprocessing', args.fasta)
 
 #if sys.argv[1] == '-p' or sys.argv[1] == '--preprocess':
     """ Preprocess only. """
@@ -29,7 +29,7 @@ if hasattr(args.fasta, 'read'):
     #genome_file = sys.argv[2]
     genome_file = args.fasta
 
-    print('will preprocess', genome_file, '\name')
+    print('will preprocess', genome_file.name)
     #out_file = '.'.join(genome_file.split('/')[-1].split('.')[0:-1]) + '.pickle' # isolate file name from path and extension.
     out_file = 'preprocessed_sequences_bw.pickle' # Use the same file name.
 
@@ -50,19 +50,21 @@ if hasattr(args.fasta, 'read'):
         print('Successfully saved to:')
         print()
         print('\t' + out_file)
+        print()
 
-    print()
-    print('Use these preprocessed sequences with a .fastq file containing reads by typing:')
-    print()
-    print('\tpython3 search_bw.py -i <reads_file.fastq>')
-    print()
+    if not hasattr(args.fastq, 'read'):
+        print()
+        print('Use these preprocessed sequences with a .fastq file containing reads by typing:')
+        print()
+        print('\t$ python3 search.py --fastq <reads_file.fastq>')
+        print()
 
 
 
 
 
 if hasattr(args.fastq, 'read'):
-    print('mapping reads from', args.fastq, 'with edit distance', args.d)
+    #print('mapping reads from', args.fastq, 'with edit distance', args.d)
     """ Import files and search. """
     state = 'search'
     reads_file = args.fastq
@@ -71,8 +73,14 @@ if hasattr(args.fastq, 'read'):
     preprocessed_file = 'preprocessed_sequences_bw.pickle' 
     #print('will map reads from', reads_file, 'onto sequence(s) from', preprocessed_file)
 
-    with open(preprocessed_file, 'rb') as file:
-        dictionary = pickle.load(file)
+    try:
+        with open(preprocessed_file, 'rb') as file:
+            dictionary = pickle.load(file)
+    except FileNotFoundError as e:
+        print(e)
+        print('\tYou need to preprocess the genome before you can map reads.')
+        print('\texample: $ python3 search.py --fasta <seqs_file.fasta>')
+        sys.exit()
 
     for i in dictionary: # Analogous to: for genome in genome_file:
         o = dictionary[i]

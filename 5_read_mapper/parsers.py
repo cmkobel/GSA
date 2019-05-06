@@ -3,8 +3,8 @@
 
 
 def parse_fasta(input_file):
-    """ # Does support multiline fasta files. """
-    #with open(input_file) as file:
+    """ # Does support multiline fasta files.
+    One problem is, that it starts out by reading through the complete file. Not a super idea."""
     raw = [i.strip() for i in input_file]
 
     header_lines = [_i for _i, i in enumerate(raw) if i[0:1] == ">"] # alle linjenumre hvor der er en header.
@@ -44,7 +44,6 @@ def parse_fastq(input_file):
     * support multiline. ?
     """
 
-    #with open(input_file) as file:
     file = iter(input_file)
     for line in file:
         if line[0:1] == '@':
