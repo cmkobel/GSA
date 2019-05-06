@@ -95,7 +95,6 @@ class search_bwt:
 
     
     def rec_approx(self, pattern, d):
-
         
         """ Recursive edit search. """
         results = []
@@ -131,10 +130,10 @@ class search_bwt:
                 
                 # Delete
                 # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
-                recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
+                #recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
 
                 # Substitute
-                recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
+                #recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
 
             
             elif match_L <= match_R: # At least one match.                
@@ -171,11 +170,11 @@ if __name__ == "__main__":
 
     def test_single():
         """ Used to test a single case. """
-        run = o.rec_approx(pattern, 1)
+        run = o.rec_approx('mississippmi', 1)
         for i in run:
             print(*i, sep = '\t')
             
-    #test_single()
+    test_single()
 
 
     def test_multiple():
@@ -193,12 +192,29 @@ if __name__ == "__main__":
                 yield f'{S[:i]}{S[i+1:]}'
 
 
+
+        print('\nInsertions')
         for rippling_pattern in ripple_I('m'):
             print(rippling_pattern, end = ' -> ')
             for search_res in o.rec_approx(rippling_pattern, d = 1):
                 print(search_res, end = ', ')
             print()
-    test_multiple()
+    
+        print('\nDeletions')
+        for rippling_pattern in ripple_D():
+            print(rippling_pattern, end = ' -> ')
+            for search_res in o.rec_approx(rippling_pattern, d = 1):
+                print(search_res, end = ', ')
+            print()
+    
+        print('\nSubstitutions')
+        for rippling_pattern in ripple_m('m'):
+            print(rippling_pattern, end = ' -> ')
+            for search_res in o.rec_approx(rippling_pattern, d = 1):
+                print(search_res, end = ', ')
+            print()
+    
+    #test_multiple()
 
 
 """
