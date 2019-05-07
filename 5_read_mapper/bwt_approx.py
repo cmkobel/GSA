@@ -1,6 +1,10 @@
 import naive_sa # Suffix array creation.
+import sa2
 import pickle # Object serialization.
 #from t4 import t4_genome as t4 # Genome for test purposes.
+
+def dprint(*args):
+    print('computing', *args)
 
 
 class search_bwt:
@@ -13,8 +17,11 @@ class search_bwt:
 
     def main_preprocess(self):
         """ Computes and saves anything needed for later searching. """
-
-        self.sa = naive_sa.sa(self.S)[0] # suffix array from sort.
+        dprint('sa')
+        
+        #self.sa = naive_sa.sa(self.S)[0] # suffix array from sort.
+        self.sa = sa2.sa(self.S)
+        
 
         # Debug:
         if not True:
@@ -25,12 +32,21 @@ class search_bwt:
                 print(h, i, j, sep = '\t')
             print()
 
+        dprint('alphabet')
         self.alphabet = sorted(set(self.S))
 
+        dprint('bwt')
         self.bwt = self.compute_bwt()
+
+        dprint('c table')
         self.C_table = [i for i in self.compute_C_table()]
+
+        dprint('o table')
         self.O = self.compute_O_table()
+
         self.inv_alph = {j: i for i, j in enumerate(self.alphabet)} # reverse lookup in alphabet f('$') = 0
+
+        dprint('preprocessing done')
 
 
     def compute_bwt(self):

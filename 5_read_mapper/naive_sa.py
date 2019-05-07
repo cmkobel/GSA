@@ -16,6 +16,7 @@ def set_S(input):
     S = memoryview(input)
 
 
+#@profile
 def sa(input):
     """ Slower, but less memory. """
 
@@ -28,14 +29,11 @@ def sa(input):
     
     l1, l2 = zip(*sufs)
 
-    return l1, l2
-
+    return l1#, l2
 
 if __name__ == '__main__':
     import t4
-    #a = sa(t4.t4_genome())
+    a = sa(t4.t4_genome()[:50000] + '$')
 
-    a, b = sa('mississippi')
 
-    for i, j in zip(a, b):
-        print(i, j);
+    print(a[:100])
