@@ -4,7 +4,8 @@ import pickle # Object serialization.
 #from t4 import t4_genome as t4 # Genome for test purposes.
 
 def dprint(*args):
-    print('computing', *args)
+    pass
+    #print('computing', *args)
 
 
 class search_bwt:
@@ -111,71 +112,6 @@ class search_bwt:
 
 
 
-
-    
-    def rec_approx(self, pattern, d):
-        
-        """ Recursive edit search. """
-        results = []
-        def recurse(i, d, L, R, cigar):
-            """
-            i:      Position in pattern.
-            d:      Number of edits left.
-            L, R:   Left and right pointers in suffix array.
-            cigar:  The CIGAR-string for the match.
-            """
-
-
-            #print(i, d, (L, R), cigar)
-
-            if i < 0: # Base case.
-                #results.append((i, d, L, R, [self.sa[i] for i in range(L, R+1)], cigar)) #  Debug version
-                results.append(([self.sa[i] for i in range(L, R+1)], cigar)) #                Short version
-                return
-            
-            match_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-            match_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
-
-            if d> 0:
-
-                # Insert
-                # Insert at this letter and move on: Continue with matching next i, without taking into account the L and R for the current i.
-                recurse(i-1, d-1, L, R, 'I' + cigar)
-
-                # Match the next letter in advance for Delete and Substite.
-                next_in_S = self.S[self.sa[L]-1]
-                next_in_S_match_L = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, L-1) * (L != 0) + 1
-                next_in_S_match_R = self.C_table[self.inv_alph[next_in_S]] + self.access_O(next_in_S, R)
-                
-                # Delete
-                # Because the letter has been deleted from the pattern, we try to match the next char in S, instead of the next in pattern.                 
-                recurse(i, d-1, next_in_S_match_L, next_in_S_match_R, 'D' + cigar)
-
-                # Substitute
-                # Substitution is the only thing that only happens when there is a mismatch.
-                if match_L > match_R: # Det bliver alt for komplekst det her.                                        
-                    recurse(i-1, d-1, next_in_S_match_L, next_in_S_match_R, 'm' + cigar)
-
-
-            
-            if match_L <= match_R: # At least one match.                
-                # Match this letter and move on
-                recurse(i-1, d, match_L, match_R, 'M' + cigar)
-
-
-        # Initialize values.
-        i = len(pattern) - 1
-        d = d
-        L = 0
-        R = len(self.S) - 1
-        cigar = ''
-
-
-        recurse(i, d, L, R, cigar)
-        return results
-
-
-    
     def simplify_cigar(self, input):
 
         prev = input[0]
@@ -192,8 +128,68 @@ class search_bwt:
 
         rv += str(count) + input[i]
 
-
         return rv
+
+    
+    def rec_approx(self, pattern, d):
+        
+        """ Recursive edit search. """
+        results = []
+        def inexrecur(i, d, L, R, cigar):
+            """
+            i:      Position in pattern.
+            d:      Number of edits left.
+            L, R:   Left and right pointers in suffix array.
+            cigar:  The CIGAR-string for the match.
+            """
+
+            #print(i, d, (L, R), cigar)
+
+            if d < 0:
+                return
+
+    
+            if i < 0: # Base case.
+                if cigar[-1] != 'D':
+                    results.append(([self.sa[i] for i in range(L, R+1)], cigar)) #                Short version
+
+
+                return
+            
+            # match_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+            # match_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+
+            # Insertion
+            inexrecur(i-1, d-1, L, R, 'I' + cigar)
+
+            for b in self.alphabet[1:]:
+                new_L = self.C_table[self.inv_alph[b]] + self.access_O(b, L-1) * (L != 0) + 1
+                new_R = self.C_table[self.inv_alph[b]] + self.access_O(b, R)
+
+                if new_L <= new_R:
+                    #if i > 0 and i < len(pattern) -1:
+                    inexrecur(i, d-1, new_L, new_R, 'D' + cigar)
+                    if b == pattern[i]:
+                        inexrecur(i-1, d, new_L, new_R, 'M' + cigar)
+                    else:
+                        inexrecur(i-1, d-1, new_L, new_R, 'M' + cigar)
+                        pass
+
+
+        # Initialize values.
+        i = len(pattern) - 1
+        d = d
+        L = 0
+        R = len(self.sa) - 1
+        cigar = ''
+
+
+        inexrecur(i, d, L, R, cigar)
+        return results
+
+
+    
+    
 
 
     def find_positions(self, pattern, d):
@@ -205,15 +201,15 @@ class search_bwt:
 
 if __name__ == "__main__":
 
-    S = 'mississippimississippimississippi'
-
-    o = search_bwt(S)
-    o.main_preprocess()
-    pattern = 'sippimissi'
+    S = 'mississippimississippi'
     
     debug_header = True
     if debug_header:
         print('i', 'd', 'L', 'R', 'pos', S, sep = '\t')
+
+    o = search_bwt(S)
+    o.main_preprocess()
+    pattern = 'sippimissi'
         
 
     def test_single():
@@ -222,7 +218,7 @@ if __name__ == "__main__":
         for i in run:
             print(*i, sep = '\t')
             
-    #test_single()
+    # test_single()
 
 
     def test_multiple():

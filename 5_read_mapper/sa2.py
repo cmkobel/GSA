@@ -15,9 +15,6 @@ if __name__ == '__main__':
 
 
     import t4
-
-
-
     a = t4.t4_genome()[:50000] + '$'
 
 
