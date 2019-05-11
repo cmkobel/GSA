@@ -130,19 +130,21 @@ class search_bwt:
 
         return rv
 
-    def calculate_D(self, pattern):
-        L = 0
-        R = len(self.S) - 1
-        z = 0
-        D = [0 for i in range(len(self.S))]
-        for i in range(len(pattern)):
-            new_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
-            new_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
-            if L > R:
-                L = 0
-                R = len(self.S) - 1
-                z += 1
-
+    # def compute_D(self, pattern):
+    #     L = 0
+    #     R = len(self.S) - 1
+    #     z = 0
+    #     D = [0 for i in range(len(pattern))]
+        
+    #     for i in range(len(pattern)):
+    #         L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+    #         R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+    #         if L > R:
+    #             L = 0
+    #             R = len(self.S) - 1
+    #             z += 1
+    #         D[i] = z
+    #     return D
 
 
 
@@ -151,7 +153,7 @@ class search_bwt:
     def rec_approx(self, pattern, d):
         
         """ Recursive edit search. """
-        results = []
+        
         
         def inexrecur(i, d, L, R, cigar):
             """
@@ -196,11 +198,17 @@ class search_bwt:
 
 
         # Initialize values.
+        results = []
+        #D_table = self.compute_D(pattern)
+
+
+
         i = len(pattern) - 1
         d = d
         L = 0
         R = len(self.sa) - 1
         cigar = ''
+
 
 
         inexrecur(i, d, L, R, cigar)
@@ -218,6 +226,7 @@ class search_bwt:
                 yield position, self.simplify_cigar(cigar)
 
 
+
 if __name__ == "__main__":
 
     S = 'mississippimississippi'
@@ -228,8 +237,10 @@ if __name__ == "__main__":
 
     o = search_bwt(S)
     o.main_preprocess()
-    pattern = 'sippimissi'
-    o.calculate_D(pattern)
+    pattern = 'sissippi'
+
+
+
         
 
     def test_single():
@@ -238,7 +249,7 @@ if __name__ == "__main__":
         for i in run:
             print(*i, sep = '\t')
             
-    # test_single()
+    #test_single()
 
 
     def test_multiple():
@@ -272,15 +283,15 @@ if __name__ == "__main__":
             print()
     
         print('\nSubstitutions')
-        for rippling_pattern in ripple_m('m'):
+        for rippling_pattern in ripple_m('M'):
             print(rippling_pattern, end = ' -> ')
             for search_res in o.rec_approx(rippling_pattern, d = 1):
                 print(search_res, end = ', ')
             print()
     
-    #test_multiple()
+    test_multiple()
 
-    for position, cigar in o.find_positions('sippimissi', 1):
+    for position, cigar in o.find_positions('ppimissi', 1):
         print(position, cigar)
 
 
