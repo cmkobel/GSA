@@ -5,6 +5,7 @@ import pickle
 import argparse
 import sys
 from pathlib import Path as path
+import multiprocessing as mp
 
 
 parser = argparse.ArgumentParser(description = 'Read mapper based on burrows wheeler with branch and bound approximation.')
@@ -82,27 +83,69 @@ if hasattr(args.fastq, 'read'):
         print('\texample: $ python3 search.py --fasta <seqs_file.fasta>')
         sys.exit()
 
+    def read_mapping(reads):
+        results = []
+        for read in reads:
+            for position, cigar in o.find_positions(read['sequence'].lower(), n_edits):
+                results.append((position, cigar, read['index']))
+        return results
+
     for i in dictionary: # Analogous to: for genome in genome_file:
         o = dictionary[i]
 
-        for read in parse_fastq(args.fastq):
-            #print(read['title'])
-            #print(o.find_positions(read['sequence']))
 
-            for match, cigar in o.find_positions(read['sequence'].lower(), n_edits):
+        reads = [read for read in parse_fastq(args.fastq)]
 
-                print(f"\
-{read['title']}\t\
+        #print(reads[:100])
+
+        # multi
+        def multithread(reads):
+            
+            def segregate_jobs(reads):
+                try:
+                    num_cores = mp.cpu_count()
+                except NotImplementedError:
+                    num_cores = 2
+
+                job_list = []
+                start = 0
+                for core in range(num_cores):
+                    end = start + int(len(reads)/num_cores)
+                    job_list.append(reads[start:end])
+                    start = end
+                if end < len(reads):
+                    job_list.append(reads[end:len(reads)])
+
+                return job_list
+            
+
+            rv = []
+            num_cores = 2 #mp.cpu_count()
+            with mp.Pool(num_cores) as pool:
+                for job in pool.map(read_mapping, segregate_jobs(reads)):
+                    for result in job:
+                        rv.append(result)
+            return rv
+
+
+        #for read in reads:
+            
+            #for match, cigar in o.find_positions(read['sequence'].lower(), n_edits):
+        for match_, cigar_, seq_idx_ in multithread(reads):
+        
+
+            print(f"\
+{reads[seq_idx_]['title']}\t\
 0\t\
 {o.title}\t\
-{match+1}\t\
+{match_+1}\t\
 0\t\
-{cigar}\t\
+{cigar_}\t\
 *\t\
 0\t\
 0\t\
-{read['sequence']}\t\
-{len(read['sequence'])*'~'}")
+{reads[seq_idx_]['sequence']}\t\
+{len(reads[seq_idx_]['sequence'])*'~'}")
 
 
 

@@ -43,7 +43,7 @@ def parse_fastq(input_file):
     ~ TODO ~
     * support multiline. ?
     """
-
+    seq_no = 0
     file = iter(input_file)
     for line in file:
         if line[0:1] == '@':
@@ -65,6 +65,8 @@ def parse_fastq(input_file):
             rv['sequence'] = sequence
             rv['description'] = description
             rv['quality'] = quality
+            rv['index'] = seq_no
+            seq_no +=1
 
             yield rv
 
