@@ -130,11 +130,29 @@ class search_bwt:
 
         return rv
 
+    def calculate_D(self, pattern):
+        L = 0
+        R = len(self.S) - 1
+        z = 0
+        D = [0 for i in range(len(self.S))]
+        for i in range(len(pattern)):
+            new_L = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], L-1) * (L != 0) + 1
+            new_R = self.C_table[self.inv_alph[pattern[i]]] + self.access_O(pattern[i], R)
+            if L > R:
+                L = 0
+                R = len(self.S) - 1
+                z += 1
+
+
+
+
+
     
     def rec_approx(self, pattern, d):
         
         """ Recursive edit search. """
         results = []
+        
         def inexrecur(i, d, L, R, cigar):
             """
             i:      Position in pattern.
@@ -150,8 +168,8 @@ class search_bwt:
 
     
             if i < 0: # Base case.
-                if cigar[-1] != 'D':
-                    results.append(([self.sa[i] for i in range(L, R+1)], cigar)) #                Short version
+                #if cigar[-1] != 'D':
+                results.append(([self.sa[i] for i in range(L, R+1)], cigar)) #                Short version
 
 
                 return
@@ -167,13 +185,14 @@ class search_bwt:
                 new_R = self.C_table[self.inv_alph[b]] + self.access_O(b, R)
 
                 if new_L <= new_R:
-                    #if i > 0 and i < len(pattern) -1:
-                    inexrecur(i, d-1, new_L, new_R, 'D' + cigar)
+                    if i < len(pattern) -1:
+                        inexrecur(i, d-1, new_L, new_R, 'D' + cigar)
                     if b == pattern[i]:
                         inexrecur(i-1, d, new_L, new_R, 'M' + cigar)
                     else:
                         inexrecur(i-1, d-1, new_L, new_R, 'M' + cigar)
                         pass
+
 
 
         # Initialize values.
@@ -210,6 +229,7 @@ if __name__ == "__main__":
     o = search_bwt(S)
     o.main_preprocess()
     pattern = 'sippimissi'
+    o.calculate_D(pattern)
         
 
     def test_single():
